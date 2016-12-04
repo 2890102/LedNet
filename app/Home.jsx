@@ -10,7 +10,7 @@ class Home extends React.Component {
 		};
 	}
 	componentDidMount() {
-		this.source = new EventSource("/events");
+		this.source = new EventSource(BASENAME + "/events");
 		this.source.onmessage = (e) => {
 		this.setState({
 				leds: [...this.state.leds, JSON.parse(e.data).split(',').map((n) => parseInt(n, 10))]
