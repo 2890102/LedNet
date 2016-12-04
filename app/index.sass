@@ -1,0 +1,56 @@
+=media($type)
+	@if $type == tablet
+		@media only screen and (min-width: 768px)
+			@content
+	@else if $type == desktop
+		@media only screen and (min-width: 992px)
+			@content
+
+*, *:before, *:after
+	box-sizing: border-box
+
+html
+	font-family: 'Noto Serif', serif
+	font-weight: 400
+	font-size: 14px
+	line-height: 23px
+	vertical-align: baseline
+	font-smoothing: antialiased
+	text-size-adjust: 100%
+
+body
+	background: #141414
+	color: #fff
+	margin: 0
+
+mount, app, route
+	display: block
+
+h1, h2, h3, h4, h5
+	font-weight: inherit
+	margin: 0
+
+a
+	color: inherit
+	text-decoration: none
+	cursor: pointer
+
+header
+	background: #E2B031
+	padding: 15px
+	h1 .mega-octicon
+		margin-right: 5px
+	.settings
+		float: right
+
+route
+	padding: 30px
+
+row
+	display: block
+	margin-bottom: 15px
+
+input[type="text"], input[type="color"]
+	display: block
+	width: 100%
+	margin: 0
