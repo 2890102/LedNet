@@ -4,12 +4,18 @@ const production = process.env.NODE_ENV === 'production';
 const LEDS = [];
 const bodyParser = require('body-parser');
 const express = require('express');
+const expressValidator = require('express-validator');
 const helmet = require('helmet');
 const path = require('path');
 const app = express();
 const server = require('http').createServer();
 const WS = new (require('ws').Server)({server: server});
 const events = new (require('express-sse'))([]);
+
+/* LedEvent Helper */
+const LedEvent = function(led) {
+	return led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b;
+};
 
 /* LedNet server */
 WS.on('connection', function(led) {
@@ -18,56 +24,59 @@ WS.on('connection', function(led) {
 	led.color = {r: 0, g: 0, b: 0};
 	for(let i=0; i<LEDS.length; i++) {
 		if(LEDS[i].id === led.id) {
+			led.color = LEDS[i].color;
 			LEDS[i].close();
 			break;
 		}
 	}
 	led.on('close', function() {
-		for(let i=0; i<LEDS.length; i++) {
+		events.initial.length = 0;
+		let l = LEDS.length;
+		for(let i=0; i<l; i++) {
 			if(LEDS[i].id === led.id) {
 				LEDS.splice(i, 1);
-				break;
-			}
-		}
-		for(let i=0; i<events.initial.length; i++) {
-			if(parseInt(events.initial[i].split(',')[0], 10) === led.id) {
-				events.initial.splice(i, 1);
-				break;
+				i--;
+				l--;
+			} else {
+				events.initial.push(LedEvent(LEDS[i]));
 			}
 		}
 		events.send(led.id, 'remove');
 	});
 	LEDS.push(led);
-	events.initial.push(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b);
-	events.send(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b, 'add');
+	events.initial.push(LedEvent(led));
+	events.send(LedEvent(led), 'add');
+	led.send(new Buffer([led.color.r, led.color.g, led.color.b]), function() {});
 });
 
 /* Exprees config & routes */
-if(production) {
-	app.use(helmet());
-	app.use(bodyParser.json());
-}
-app.get("/led/:id/:r/:g/:b", function(req, res) {
-	const id = parseInt(req.params.id, 10);
-	const r = parseInt(req.params.r, 10);
-	const g = parseInt(req.params.g, 10);
-	const b = parseInt(req.params.b, 10);
-	if(isNaN(id) || isNaN(r) || isNaN(g) || isNaN(b)) return res.send("FAIL");
-	for(let i=0; i<LEDS.length; i++) {
-		const led = LEDS[i];
-		if(led.id === id) {
-			led.send(new Buffer([led.color.r = r, led.color.g = g, led.color.b = b]), function() {});
-			for(let i=0; i<events.initial.length; i++) {
-				if(parseInt(events.initial[i].split(',')[0], 10) === led.id) {
-					events.initial[i] = led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b;
-					break;
+production && app.use(helmet());
+app.use(bodyParser.json());
+app.use(expressValidator());
+app.set('trust proxy', 'loopback');
+app.post("/led", function(req, res) {
+	req.checkBody('id').notEmpty().isInt();
+	req.checkBody('r').notEmpty().isInt();
+	req.checkBody('g').notEmpty().isInt();
+	req.checkBody('b').notEmpty().isInt();
+	req.getValidationResult().then(function(result) {
+    if(!result.isEmpty()) return res.send("FAIL", 400);
+		for(let i=0; i<LEDS.length; i++) {
+			const led = LEDS[i];
+			if(led.id === req.body.id) {
+				led.send(new Buffer([led.color.r = req.body.r, led.color.g = req.body.g, led.color.b = req.body.b]), function() {});
+				for(let i=0; i<events.initial.length; i++) {
+					if(parseInt(events.initial[i].split(',')[0], 10) === led.id) {
+						events.initial[i] = LedEvent(led);
+						break;
+					}
 				}
+				events.send(LedEvent(led), 'update');
+				return res.send("OK");
 			}
-			events.send(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b, 'update');
-			return res.send("OK");
+			res.send("FAIL");
 		}
-	}
-	return res.send("FAIL");
+	});
 });
 
 /* Event source */

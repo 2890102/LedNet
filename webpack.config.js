@@ -7,9 +7,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const outputPath = path.resolve(__dirname, 'dist');
-const modulesPath = path.resolve(__dirname, 'node_modules');
 const appPath = path.resolve(__dirname, 'app');
+const outputPath = path.resolve(__dirname, 'dist');
 const publicPath = production ? '/lednet/' : '/';
 
 module.exports = {
@@ -35,13 +34,11 @@ module.exports = {
 	module: {
 		loaders: [
 			{
-				test: /\.(js|jsx)$/,
+				test: /\.jsx$/,
 				loader: 'babel-loader',
-				include: appPath,
-				exclude: modulesPath,
+				exclude: /node_modules/,
 				query: {
-					presets: ['es2015', 'react', 'stage-1'],
-					compact: false
+					presets: ['es2015', 'react', 'stage-1'].concat(!production ? ['react-hmre'] : [])
 				}
 			},
 			{
@@ -49,31 +46,25 @@ module.exports = {
 				loader: ExtractTextPlugin.extract(
 					'style',
 					'css!postcss!sass'
-				),
-				include: appPath,
-				exclude: modulesPath
-			},
-			{
-				test: /\.(jpg|png)$/,
-				loader: 'file',
-				include: appPath,
-				exclude: modulesPath,
-				query: {
-					name: 'snapshots/' + (production ? '[hash].[ext]' : '[name].[ext]')
-				}
+				)
 			},
 			{
 				test: /\.css$/,
 				loader: ExtractTextPlugin.extract(
 					'style',
 					'css!postcss'
-				),
-				include: modulesPath
+				)
 			},
 			{
-				test: /\.(otf|eot|svg|ttf|woff|woff2).*$/,
+				test: /\.(jpg|jpeg|png|gif)$/,
 				loader: 'file',
-				include: modulesPath,
+				query: {
+					name: 'snapshots/' + (production ? '[hash].[ext]' : '[name].[ext]')
+				}
+			},
+			{
+				test: /\.(otf|eot|svg|ttf|woff|woff2)$/,
+				loader: 'file',
 				query: {
 					name: 'fonts/' + (production ? '[hash].[ext]' : '[name].[ext]')
 				}
@@ -98,15 +89,15 @@ module.exports = {
 				collapseWhitespace: true
 			}
 		}),
+		new webpack.optimize.OccurrenceOrderPlugin()
 	].concat(!production ? [
 		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NoErrorsPlugin()
 	] : []).concat(production ? [
-		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.optimize.UglifyJsPlugin({
 			compressor: {
-				warnings: false
+				warnings: false,
+        screw_ie8: true
 			}
 		}),
 		new ImageminPlugin()

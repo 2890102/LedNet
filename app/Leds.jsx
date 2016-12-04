@@ -61,22 +61,33 @@ class Leds extends React.Component {
 			led[c + 1] = isNaN(value) ? 0 : value;
 		}
 		this.setState({leds});
-		fetch(BASENAME + '/led/' + led[0] + '/' + led[1] + '/' + led[2] + '/' + led[3] + '/');
+		fetch(BASENAME + '/led', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: led[0],
+				r: led[1],
+				g: led[2],
+				b: led[3]
+			})
+		});
 	}
 	render() {
 		const leds = this.state.leds.map(([id, r, g, b], i) => (
-			<row key={i}>
+			<led key={i}>
 				<label>ChipId: {id}</label>
 				<input type="number" value={r} onChange={(e) => this.update(i, 0, e.target.value)} />
 				<input type="number" value={g} onChange={(e) => this.update(i, 1, e.target.value)} />
 				<input type="number" value={b} onChange={(e) => this.update(i, 2, e.target.value)} />
 				<input type="color" value={'#' + rgb2hex(r, g, b)} onChange={(e) => this.update(i, -1, e.target.value)} />
-			</row>
+			</led>
 		))
 		return (
-			<div>
+			<leds>
 				{leds}
-			</div>
+			</leds>
 		)
 	}
 }
