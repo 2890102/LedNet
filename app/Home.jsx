@@ -17,16 +17,10 @@ class Home extends React.Component {
 				leds: [...this.state.leds, JSON.parse(e.data).split(',').map((n) => parseInt(n, 10))]
 			});
 		};
-		this.source.addEventListener('update', (e) => {
-			const led = JSON.parse(e.data).split(',').map((n) => parseInt(n, 10));
-			const leds = [...this.state.leds];
-			for(let i=0; i<leds.length; i++) {
-				if(leds[i][0] === led[0]) {
-					leds[i] = led;
-					break;
-				}
-			}
-			this.setState({leds});
+		this.source.addEventListener('connection', (e) => {
+			this.setState({
+				leds: [...this.state.leds, JSON.parse(e.data).split(',').map((n) => parseInt(n, 10))]
+			});
 		});
 		this.source.addEventListener('close', (e) => {
 			const id = parseInt(JSON.parse(e.data), 10);
@@ -34,6 +28,17 @@ class Home extends React.Component {
 			for(let i=0; i<leds.length; i++) {
 				if(leds[i][0] === id) {
 					leds.splice(i, 1);
+					break;
+				}
+			}
+			this.setState({leds});
+		});
+		this.source.addEventListener('update', (e) => {
+			const led = JSON.parse(e.data).split(',').map((n) => parseInt(n, 10));
+			const leds = [...this.state.leds];
+			for(let i=0; i<leds.length; i++) {
+				if(leds[i][0] === led[0]) {
+					leds[i] = led;
 					break;
 				}
 			}

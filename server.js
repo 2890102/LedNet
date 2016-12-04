@@ -39,7 +39,7 @@ WS.on('connection', function(led) {
 	});
 	LEDS.push(led);
 	events.initial.push(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b);
-	events.send(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b);
+	events.send(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b, 'connection');
 });
 
 /* Exprees config & routes */
