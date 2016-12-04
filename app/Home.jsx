@@ -17,12 +17,12 @@ class Home extends React.Component {
 				leds: [...this.state.leds, JSON.parse(e.data).split(',').map((n) => parseInt(n, 10))]
 			});
 		};
-		this.source.addEventListener('connection', (e) => {
+		this.source.addEventListener('add', (e) => {
 			this.setState({
 				leds: [...this.state.leds, JSON.parse(e.data).split(',').map((n) => parseInt(n, 10))]
 			});
 		});
-		this.source.addEventListener('close', (e) => {
+		this.source.addEventListener('remove', (e) => {
 			const id = parseInt(JSON.parse(e.data), 10);
 			const leds = [...this.state.leds];
 			for(let i=0; i<leds.length; i++) {

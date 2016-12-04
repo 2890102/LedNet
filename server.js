@@ -35,11 +35,11 @@ WS.on('connection', function(led) {
 				break;
 			}
 		}
-		events.send(led.id, 'close');
+		events.send(led.id, 'remove');
 	});
 	LEDS.push(led);
 	events.initial.push(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b);
-	events.send(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b, 'connection');
+	events.send(led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b, 'add');
 });
 
 /* Exprees config & routes */
