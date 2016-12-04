@@ -33,7 +33,7 @@ WS.on('connection', function(led) {
 		events.initial.length = 0;
 		let l = LEDS.length;
 		for(let i=0; i<l; i++) {
-			if(LEDS[i].id === led.id) {
+			if(LEDS[i]._socket._handle.fd === led._socket._handle.fd) {
 				LEDS.splice(i, 1);
 				i--;
 				l--;
