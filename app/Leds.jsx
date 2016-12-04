@@ -2,7 +2,7 @@ import React from 'react';
 import hex2rgb from 'hex-rgb';
 import rgb2hex from 'rgb-hex';
 
-class Home extends React.Component {
+class Leds extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -48,22 +48,29 @@ class Home extends React.Component {
 	componentWillUnmount() {
 		this.source.close();
 	}
-	update(i, value, picker) {
+	update(i, c, value) {
 		const leds = [...this.state.leds];
 		const led = leds[i];
-		const rgb = picker ? hex2rgb(value) : value.split(',').map((n) => parseInt(n, 10));
-		led[1] = isNaN(rgb[0]) ? 0 : rgb[0];
-		led[2] = isNaN(rgb[1]) ? 0 : rgb[1];
-		led[3] = isNaN(rgb[2]) ? 0 : rgb[2];
+		if(c === -1) {
+			const rgb = hex2rgb(value);
+			led[1] = isNaN(rgb[0]) ? 0 : rgb[0];
+			led[2] = isNaN(rgb[1]) ? 0 : rgb[1];
+			led[3] = isNaN(rgb[2]) ? 0 : rgb[2];
+		} else {
+			value = parseInt(value, 10);
+			led[c + 1] = isNaN(value) ? 0 : value;
+		}
 		this.setState({leds});
 		fetch(BASENAME + '/led/' + led[0] + '/' + led[1] + '/' + led[2] + '/' + led[3] + '/');
 	}
 	render() {
 		const leds = this.state.leds.map(([id, r, g, b], i) => (
 			<row key={i}>
-				ChipId: {id}
-				<input type="text" value={r + "," + g + "," + b} onChange={(e) => this.update(i, e.target.value)} />
-				<input type="color" value={'#' + rgb2hex(r, g, b)} onChange={(e) => this.update(i, e.target.value, true)} />
+				<label>ChipId: {id}</label>
+				<input type="number" value={r} onChange={(e) => this.update(i, 0, e.target.value)} />
+				<input type="number" value={g} onChange={(e) => this.update(i, 1, e.target.value)} />
+				<input type="number" value={b} onChange={(e) => this.update(i, 2, e.target.value)} />
+				<input type="color" value={'#' + rgb2hex(r, g, b)} onChange={(e) => this.update(i, -1, e.target.value)} />
 			</row>
 		))
 		return (
@@ -74,4 +81,4 @@ class Home extends React.Component {
 	}
 }
 
-export default Home;
+export default Leds;
