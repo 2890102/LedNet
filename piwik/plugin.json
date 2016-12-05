@@ -1,0 +1,14 @@
+{
+	"name": "LedNet",
+	"description": "A centralized network of pixels",
+	"version": "1.0.0",
+	"require": {
+		"piwik": ">=2.0.0"
+	},
+	"authors": [
+		{
+			"name": "Daniel Esteban Nomebela"
+		}
+	],
+	"license": "MIT"
+}
