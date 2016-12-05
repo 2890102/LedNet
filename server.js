@@ -60,11 +60,11 @@ app.post('/piwik', (req, res) => {
 		const ledID = 14150704;
 		if(req.body.id === 1) {
 			// dani.gatunes.com
-			UpdateLed(ledID, 0, 0, 255, 1);
+			UpdateLed(ledID, 0, 0, 127, 1);
 		}
 		if(req.body.id === 2) {
 			// voxels.es
-			UpdateLed(ledID, 255, 0, 0, 1);
+			UpdateLed(ledID, 127, 0, 0, 1);
 		}
 		timeout && clearTimeout(timeout);
 		timeout = setTimeout(() => UpdateLed(ledID, 0, 0, 0, 0), 10000);
