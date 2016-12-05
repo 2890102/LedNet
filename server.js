@@ -25,7 +25,7 @@ const UpdateLed = (id, r, g, b, mode) => {
 			led.color = {r, g, b};
 			led.mode = mode;
 			events.initial.length = 0;
-			for(let i=0; i<LEDS.length; i++) events.initial.push(LedEvent(LEDS[i]));
+			for(let j=0; j<LEDS.length; j++) events.initial.push(LedEvent(LEDS[j]));
 			led.send(new Buffer([led.color.r, led.color.g, led.color.b, led.mode]), () => {});
 			events.send(LedEvent(led), 'update');
 			return true;
