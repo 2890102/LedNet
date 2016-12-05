@@ -10,7 +10,7 @@
 #include <WebSocketsClient.h>
 
 /* Server config */
-#define SERVER_HOST "server.gatunes.com"
+#define SERVER_HOST "projects.gatunes.com"
 #define SERVER_PATH "/lednet/"
 #define SERVER_PORT 443
 #define SERVER_SSL 1
