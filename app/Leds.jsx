@@ -48,9 +48,8 @@ class Leds extends React.Component {
 	componentWillUnmount() {
 		this.source.close();
 	}
-	update(i, c, value) {
-		const leds = [...this.state.leds];
-		const led = leds[i];
+	updateColor(i, c, value) {
+		const led = [...this.state.leds[i]];
 		if(c === -1) {
 			const rgb = hex2rgb(value);
 			led[1] = isNaN(rgb[0]) ? 0 : rgb[0];
@@ -60,6 +59,17 @@ class Leds extends React.Component {
 			value = parseInt(value, 10);
 			led[c + 1] = isNaN(value) ? 0 : value;
 		}
+		this.update(i, led);
+	}
+	updateMode(i, value) {
+		const led = [...this.state.leds[i]];
+		value = parseInt(value, 10);
+		led[4] = isNaN(value) ? 0 : value;
+		this.update(i, led);
+	}
+	update(i, led) {
+		const leds = [...this.state.leds];
+		leds[i] = led;
 		this.setState({leds});
 		fetch(BASENAME + '/led', {
 			method: 'POST',
@@ -70,18 +80,33 @@ class Leds extends React.Component {
 				id: led[0],
 				r: led[1],
 				g: led[2],
-				b: led[3]
+				b: led[3],
+				mode: led[4]
 			})
 		});
 	}
 	render() {
-		const leds = this.state.leds.map(([id, r, g, b], i) => (
+		const leds = this.state.leds.map(([id, r, g, b, mode], i) => (
 			<led key={i}>
-				<label>ChipId: {id}</label>
-				<input type="number" value={r} onChange={(e) => this.update(i, 0, e.target.value)} />
-				<input type="number" value={g} onChange={(e) => this.update(i, 1, e.target.value)} />
-				<input type="number" value={b} onChange={(e) => this.update(i, 2, e.target.value)} />
-				<input type="color" value={'#' + rgb2hex(r, g, b)} onChange={(e) => this.update(i, -1, e.target.value)} />
+				<h5>ChipId: {id}</h5>
+				<input type="number" value={r} onChange={(e) => this.updateColor(i, 0, e.target.value)} />
+				<input type="number" value={g} onChange={(e) => this.updateColor(i, 1, e.target.value)} />
+				<input type="number" value={b} onChange={(e) => this.updateColor(i, 2, e.target.value)} />
+				<input type="color" value={'#' + rgb2hex(r, g, b)} onChange={(e) => this.updateColor(i, -1, e.target.value)} />
+				<div>
+					<label>
+						<input type="radio" checked={mode === 0} value="0" onChange={(e) => this.updateMode(i, e.target.value)} />
+						ON
+					</label>
+					<label>
+						<input type="radio" checked={mode === 1} value="1" onChange={(e) => this.updateMode(i, e.target.value)} />
+						Pulse
+					</label>
+					<label>
+						<input type="radio" checked={mode === 2} value="2" onChange={(e) => this.updateMode(i, e.target.value)} />
+						OFF
+					</label>
+				</div>
 			</led>
 		))
 		return (

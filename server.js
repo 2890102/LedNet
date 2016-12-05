@@ -13,40 +13,39 @@ const WS = new (require('ws').Server)({server: server});
 const events = new (require('express-sse'))([]);
 
 /* LedEvent Helper */
-const LedEvent = function(led) {
-	return led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b;
-};
+const LedEvent = (led) => (
+	led.id + ',' + led.color.r + ',' + led.color.g + ',' + led.color.b + ',' + led.mode
+);
 
 /* LedNet server */
-WS.on('connection', function(led) {
+WS.on('connection', (led) => {
 	led.id = parseInt(led.upgradeReq.url.substr(1), 10);
 	if(!led.id || isNaN(led.id)) return led.close();
 	led.color = {r: 0, g: 0, b: 0};
+	led.mode = 0;
 	for(let i=0; i<LEDS.length; i++) {
 		if(LEDS[i].id === led.id) {
 			led.color = LEDS[i].color;
+			led.mode = LEDS[i].mode;
 			LEDS[i].close();
 			break;
 		}
 	}
-	led.on('close', function() {
-		events.initial.length = 0;
-		let l = LEDS.length;
-		for(let i=0; i<l; i++) {
-			if(LEDS[i]._socket._handle.fd === led._socket._handle.fd) {
+	led.on('close', () => {
+		for(let i=0; i<LEDS.length; i++) {
+			if(LEDS[i].id === led.id) {
 				LEDS.splice(i, 1);
-				i--;
-				l--;
-			} else {
-				events.initial.push(LedEvent(LEDS[i]));
+				break;
 			}
 		}
+		events.initial.length = 0;
+		for(let i=0; i<LEDS.length; i++) events.initial.push(LedEvent(LEDS[i]));
 		events.send(led.id, 'remove');
 	});
 	LEDS.push(led);
 	events.initial.push(LedEvent(led));
 	events.send(LedEvent(led), 'add');
-	led.send(new Buffer([led.color.r, led.color.g, led.color.b]), function() {});
+	led.send(new Buffer([led.color.r, led.color.g, led.color.b, led.mode]), () => {});
 });
 
 /* Exprees config & routes */
@@ -54,23 +53,22 @@ production && app.use(helmet());
 app.use(bodyParser.json());
 app.use(expressValidator());
 app.set('trust proxy', 'loopback');
-app.post("/led", function(req, res) {
+app.post("/led", (req, res) => {
 	req.checkBody('id').notEmpty().isInt();
 	req.checkBody('r').notEmpty().isInt();
 	req.checkBody('g').notEmpty().isInt();
 	req.checkBody('b').notEmpty().isInt();
-	req.getValidationResult().then(function(result) {
+	req.checkBody('mode').notEmpty().isInt();
+	req.getValidationResult().then((result) => {
     if(!result.isEmpty()) return res.send("FAIL", 400);
 		for(let i=0; i<LEDS.length; i++) {
 			const led = LEDS[i];
 			if(led.id === req.body.id) {
-				led.send(new Buffer([led.color.r = req.body.r, led.color.g = req.body.g, led.color.b = req.body.b]), function() {});
-				for(let i=0; i<events.initial.length; i++) {
-					if(parseInt(events.initial[i].split(',')[0], 10) === led.id) {
-						events.initial[i] = LedEvent(led);
-						break;
-					}
-				}
+				events.initial.length = 0;
+				led.color = {r: req.body.r, g: req.body.g, b: req.body.b};
+				led.mode = req.body.mode;
+				for(let i=0; i<LEDS.length; i++) events.initial.push(LedEvent(LEDS[i]));
+				led.send(new Buffer([led.color.r, led.color.g, led.color.b, led.mode]), () => {});
 				events.send(LedEvent(led), 'update');
 				return res.send("OK");
 			}
@@ -85,9 +83,9 @@ app.get('/events', events.init);
 /* App server */
 if(production) {
 	app.use(express.static(__dirname + '/dist'));
-  app.get('*', function response(req, res) {
-    res.sendFile(path.join(__dirname, 'dist/index.html'));
-  });
+  app.get('*', (req, res) => (
+    res.sendFile(path.join(__dirname, 'dist/index.html'))
+  ));
 } else {
 	const webpack = require('webpack');
 	const webpackMiddleware = require('webpack-dev-middleware');
@@ -108,7 +106,7 @@ if(production) {
   });
   app.use(middleware);
   app.use(webpackHotMiddleware(compiler));
-  app.get('*', function response(req, res) {
+  app.get('*', (req, res) => {
     res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
     res.end();
   });
@@ -116,4 +114,4 @@ if(production) {
 
 /* HTTP server */
 server.on('request', app);
-server.listen(production ? 7480 : 8080);
+server.listen(process.env.PORT || 8080, process.env.HOSTNAME || '');
