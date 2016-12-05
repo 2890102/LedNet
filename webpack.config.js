@@ -9,7 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const appPath = path.resolve(__dirname, 'app');
 const outputPath = path.resolve(__dirname, 'dist');
-const publicPath = production ? '/lednet/' : '/';
+const publicPath = process.env.BASENAME || '/';
 
 module.exports = {
 	entry: (production ? [] : [
