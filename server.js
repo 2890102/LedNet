@@ -50,6 +50,7 @@ app.post('/led', (req, res) => {
 		res.send(UpdateLed(req.body.id, req.body.r, req.body.g, req.body.b, req.body.mode) ? 'OK' : 'FAIL');
 	});
 });
+let timeout;
 app.post('/piwik', (req, res) => {
 	req.checkBody('id').notEmpty().isInt();
 	req.getValidationResult().then((result) => {
@@ -65,6 +66,8 @@ app.post('/piwik', (req, res) => {
 			// voxels.es
 			UpdateLed(ledID, 255, 0, 0, 1);
 		}
+		timeout && clearTimeout(timeout);
+		timeout = setTimeout(() => UpdateLed(ledID, 0, 0, 0, 0), 10000);
 
 		res.end();
 	});
