@@ -9,8 +9,9 @@ class LedNet extends \Piwik\Plugin {
   }
 
 	/* Notify the LedNet server on every pageview */
-	public function trackVisit(&$idSite) {
-		$req = curl_init("https://projects.gatunes.com/lednet/piwik");
+	public function trackVisit(&$idSite, $params) {
+		if(!empty($params['link'])) return;
+		$req = curl_init("http://projects.gatunes.com/lednet/piwik");
 		$payload = json_encode(array(
 			"id" => $idSite
 		));
