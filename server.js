@@ -47,7 +47,7 @@ app.post('/led', (req, res) => {
 	req.checkBody('mode').notEmpty().isInt();
 	req.getValidationResult().then((result) => {
     if(!result.isEmpty()) return res.send('FAIL', 400);
-		res.send(UpdateLed(req.body.id, req.body.r, req.body.g, req.body.b) ? 'OK' : 'FAIL');
+		res.send(UpdateLed(req.body.id, req.body.r, req.body.g, req.body.b, req.body.mode) ? 'OK' : 'FAIL');
 	});
 });
 app.post('/piwik', (req, res) => {
