@@ -3,10 +3,10 @@ namespace Piwik\Plugins\LedNet;
 
 class LedNet extends \Piwik\Plugin {
 	public function registerEvents() {
-	  return array(
-	    'Tracker.Request.getIdSite' => 'trackVisit'
-	  );
-  }
+		return array(
+			'Tracker.Request.getIdSite' => 'trackVisit'
+		);
+	}
 
 	/* Notify the LedNet server on every pageview */
 	public function trackVisit(&$idSite, $params) {

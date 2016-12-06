@@ -39,7 +39,7 @@ module.exports = (app) => {
 	app.ws('/led/:id', function(led, req) {
 		req.checkParams('id').notEmpty().isInt();
 		req.getValidationResult().then((result) => {
-	    if(!result.isEmpty()) return led.close();
+			if(!result.isEmpty()) return led.close();
 			/* Init the LED state */
 			led.id = req.sanitizeParams('id').toInt();
 			led.state = {

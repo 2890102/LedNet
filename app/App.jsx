@@ -3,9 +3,9 @@ import {Link} from 'react-router';
 import Octicon from 'react-octicon';
 
 class App extends React.Component {
-  render() {
+	render() {
 		return (
-      <root>
+			<root>
 				<header>
 					<h1>
 						<Link to="/">
@@ -16,9 +16,9 @@ class App extends React.Component {
 				<route>
 					{this.props.children}
 				</route>
-      </root>
-    )
-  }
+			</root>
+		)
+	}
 }
 
 export default App;

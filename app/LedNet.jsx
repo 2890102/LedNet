@@ -17,7 +17,7 @@ class LedNet extends React.Component {
 	}
 	connect() {
 		this.socket = new WebSocket('ws' + (location.protocol === 'https:' ? 's' : '') + '://' + location.host + BASENAME + '/');
-    this.socket.onmessage = (e) => {
+		this.socket.onmessage = (e) => {
 			let message;
 			try {
 				message = JSON.parse(e.data);
@@ -55,7 +55,7 @@ class LedNet extends React.Component {
 					return;
 			}
 			this.setState({leds});
-    };
+		};
 		this.socket.onclose = () => {
 			setTimeout(this.connect.bind(this), 0);
 		};

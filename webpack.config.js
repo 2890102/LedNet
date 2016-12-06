@@ -97,7 +97,7 @@ module.exports = {
 		new webpack.optimize.UglifyJsPlugin({
 			compressor: {
 				warnings: false,
-        screw_ie8: true
+				screw_ie8: true
 			}
 		}),
 		new ImageminPlugin()
