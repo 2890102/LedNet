@@ -1,72 +1,72 @@
 <!DOCTYPE html>
 <html>
-		<head>
-				<meta charset="UTF-8">
-				<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-				<meta name="viewport" content="width=device-width, initial-scale=1">
-				<title>LedNet - Setup</title>
-				<style>
-					* {
-						margin: 0;
-						box-sizing: border-box;
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>LedNet - Setup</title>
+		<style>
+			* {
+				margin: 0;
+				box-sizing: border-box;
+			}
+			label {
+				display: block;
+			}
+			input, select {
+				width: 100%;
+				margin-bottom: 10px;
+			}
+			button {
+				display: block;
+				width: 100%;
+				padding: 10px 0;
+			}
+			form {
+				width: 300px;
+				margin: 150px auto;
+			}
+		</style>
+	</head>
+	<body>
+		<form method="post" action="/setup">
+			<label>SSID</label>
+			<input type="text" name="ssid" required>
+			<label>Password</label>
+			<input type="text" name="password" required>
+			<button type="submit">Save &amp; restart</button>
+		</form>
+		<script>
+			fetch('networks.json')
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(networks) {
+				if(!networks.length) return;
+				const form = document.getElementsByTagName('form')[0];
+				const select = document.createElement('select');
+				const input = form.ssid;
+				select.name = 'ssid';
+				select.addEventListener('change', function() {
+					if(this.selectedIndex === networks.length) {
+						form.replaceChild(input, select);
+						input.focus();
 					}
-					label {
-						display: block;
-					}
-					input, select {
-						width: 100%;
-						margin-bottom: 10px;
-					}
-					button {
-						display: block;
-						width: 100%;
-						padding: 10px 0;
-					}
-					form {
-						width: 300px;
-						margin: 150px auto;
-					}
-				</style>
-		</head>
-		<body>
-			<form method="post" action="/setup">
-				<label>SSID</label>
-				<input type="text" name="ssid" required>
-				<label>Password</label>
-				<input type="text" name="password" required>
-				<button type="submit">Save &amp; restart</button>
-			</form>
-			<script>
-				fetch('networks.json')
-				.then(function(response) {
-					return response.json();
-				})
-				.then(function(networks) {
-					if(!networks.length) return;
-					const form = document.getElementsByTagName('form')[0];
-					const select = document.createElement('select');
-					const input = form.ssid;
-					select.name = 'ssid';
-					select.addEventListener('change', function() {
-						if(this.selectedIndex === networks.length) {
-							form.replaceChild(input, select);
-							input.focus();
-						}
-					});
-					form.replaceChild(select, input);
-					networks.sort(function(a, b) {
-						return b[1] - a[1];
-					});
-					networks.forEach(function(network) {
-						const option = document.createElement('option');
-						option.value = network[0];
-						option.innerText = '[' + network[1] + '] ' + network[0] + (network[2] ? ' (open)' : '');
-						select.appendChild(option);
-					});
+				});
+				form.replaceChild(select, input);
+				networks.sort(function(a, b) {
+					return b[1] - a[1];
+				});
+				networks.forEach(function(network) {
 					const option = document.createElement('option');
-					option.innerText = 'other...';
+					option.value = network[0];
+					option.innerText = '[' + network[1] + '] ' + network[0] + (network[2] ? ' (open)' : '');
 					select.appendChild(option);
 				});
-			</script>
-		</body>
+				const option = document.createElement('option');
+				option.innerText = 'other...';
+				select.appendChild(option);
+			});
+		</script>
+	</body>
 </html>
