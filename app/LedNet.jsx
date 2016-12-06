@@ -16,7 +16,7 @@ class LedNet extends React.Component {
 		this.socket.close();
 	}
 	connect() {
-		this.socket = new WebSocket('ws' + (location.protocol === 'https:' ? 's' : '') + '://' + location.host + BASENAME);
+		this.socket = new WebSocket('ws' + (location.protocol === 'https:' ? 's' : '') + '://' + location.host + BASENAME + '/');
     this.socket.onmessage = (e) => {
 			let message;
 			try {
