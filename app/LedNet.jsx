@@ -97,9 +97,11 @@ class LedNet extends React.Component {
 				{this.state.leds.map(({id, state: {color: {r, g, b}, mode}}, i) => (
 					<led key={i}>
 						<h5>ChipId: {id}</h5>
-						<input type="number" value={r} onChange={(e) => this.updateColor(i, 'r', e.target.value)} />
-						<input type="number" value={g} onChange={(e) => this.updateColor(i, 'g', e.target.value)} />
-						<input type="number" value={b} onChange={(e) => this.updateColor(i, 'b', e.target.value)} />
+						<div>
+							<input type="number" min="0" max="255" value={r} onChange={(e) => this.updateColor(i, 'r', e.target.value)} />
+							<input type="number" min="0" max="255" value={g} onChange={(e) => this.updateColor(i, 'g', e.target.value)} />
+							<input type="number" min="0" max="255" value={b} onChange={(e) => this.updateColor(i, 'b', e.target.value)} />
+						</div>
 						<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => this.updateColor(i, 'picker', e.target.value)} />
 						<div>
 							<label>
