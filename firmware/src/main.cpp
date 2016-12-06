@@ -11,7 +11,7 @@
 
 /* Server config */
 #define SERVER_HOST "projects.gatunes.com"
-#define SERVER_PATH "/lednet/"
+#define SERVER_PATH "/lednet/led/"
 #define SERVER_PORT 443
 #define SERVER_SSL 1
 
@@ -191,7 +191,7 @@ void setup() {
 	#else
 	socket.begin(SERVER_HOST, SERVER_PORT, url.c_str());
 	#endif
-	socket.onEvent([](WStype_t type, uint8_t * payload, size_t length) {
+	socket.onEvent([](WStype_t type, uint8_t* payload, size_t length) {
 		switch(type) {
 			case WStype_BIN:
 				if(length == 4) {
@@ -214,7 +214,11 @@ void setup() {
 void loop() {
 	if(config.setup) return;
 	socket.loop();
-	if(digitalRead(BUTTON) == LOW) Reset();
+	if(digitalRead(BUTTON) == LOW) {
+		Reset();
+		uint8_t payload[4] = {1};
+		socket.sendBIN(payload, 1);
+	}
 	if(mode == MODE_PULSE) {
 		unsigned long step = millis() % (STEPS * 2);
 		if(step > STEPS) step = (STEPS * 2) - step;
