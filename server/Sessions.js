@@ -12,7 +12,16 @@ module.exports = (app) => {
 	/* Mongoose connection */
 	const connect = () => {
 		mongoose.connect(Config.mongoURI, (err) => {
-			err && console.log(err);
+			if(err) return console.log(err);
+			/* Check for existing users */
+			User.count({}, (err, count) => {
+				if(count > 0) return;
+				/* Populate default user */
+				(new User({
+					email: Config.defaultUser.email,
+					password: Config.defaultUser.password
+				})).save();
+			});
 		});
 	};
 	mongoose.Promise = global.Promise;
