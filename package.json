@@ -28,6 +28,7 @@
     "hexrgb": "0.0.2",
     "html-webpack-plugin": "^2.24.1",
     "imagemin-webpack-plugin": "^1.4.4",
+    "immutability-helper": "^2.0.0",
     "node-sass": "^3.13.0",
     "postcss-loader": "^1.2.0",
     "react": "^15.4.1",

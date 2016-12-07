@@ -1,4 +1,5 @@
 import React from 'react';
+import update from 'immutability-helper';
 import {hex2rgb, rgb2hex} from 'hexrgb';
 
 class LedNet extends React.Component {
@@ -24,32 +25,24 @@ class LedNet extends React.Component {
 			} catch(e) {
 				return;
 			}
-			const leds = [...this.state.leds];
-			const getById = (id, justTheIndex) => {
-				for(let i=0; i<leds.length; i++) {
-					if(leds[i].id === id) {
-						return justTheIndex ? i : leds[i];
-					}
-				}
-				return false;
-			};
+			let leds;
 			switch(message.event) {
 				case 'init':
-					return this.setState({leds: message.leds});
+					leds = message.leds;
 				break;
 				case 'add':
-					leds.push({
+					leds = update(this.state.leds, {$push: [{
 						id: message.led,
 						state: message.state
-					});
+					}]});
 				break;
 				case 'remove':
-					const i = getById(message.led, true);
-					i !== false && leds.splice(i, 1);
+					leds = this.state.leds.filter((led) => (led.id !== message.led));
 				break;
 				case 'update':
-					const led = getById(message.led);
-					led.state = message.state;
+					const index = this.state.leds.findIndex((led) => (led.id === message.led));
+					if(index === -1) return;
+					leds = update(this.state.leds, {[index]: {state: {$set: message.state}}});
 				break;
 				default:
 					return;
@@ -61,35 +54,30 @@ class LedNet extends React.Component {
 		};
 	}
 	updateColor(i, c, value) {
-		const state = {...this.state.leds[i].state};
+		let color;
 		if(c === 'picker') {
 			const rgb = hex2rgb(value, true);
-			state.color = {
-				r: isNaN(rgb[0]) ? 0 : rgb[0],
-				g: isNaN(rgb[1]) ? 0 : rgb[1],
-				b: isNaN(rgb[2]) ? 0 : rgb[2]
+			if(rgb === null) color = {r: 0, g: 0, b: 0};
+			else color = {
+				r: Math.min(Math.max(rgb[0], 0), 255),
+				g: Math.min(Math.max(rgb[1], 0), 255),
+				b: Math.min(Math.max(rgb[2], 0), 255)
 			};
 		} else {
-			value = parseInt(value, 10);
-			state.color = {...state.color, [c]: isNaN(value) ? 0 : value};
+			color = update(this.state.leds[i].state.color, {[c]: {$set: parseInt(value, 10) || 0}});
 		}
-		this.update(i, state);
+		this.update(i, update(this.state.leds[i].state, {color: {$set: color}}));
 	}
 	updateMode(i, value) {
-		const state = {...this.state.leds[i].state};
-		value = parseInt(value, 10);
-		state.mode = isNaN(value) ? 0 : value;
-		this.update(i, state);
+		this.update(i, update(this.state.leds[i].state, {mode: {$set: parseInt(value, 10) || 0}}));
 	}
 	update(i, state) {
-		const leds = [...this.state.leds];
-		leds[i].state = state;
-		this.setState({leds});
+		this.setState({leds: update(this.state.leds, {[i]: {state: {$set: state}}})});
 		this.socket.send(JSON.stringify({
 			event: 'update',
-			led: leds[i].id,
+			led: this.state.leds[i].id,
 			state: state
-		}), () => {});
+		}));
 	}
 	render() {
 		return (
