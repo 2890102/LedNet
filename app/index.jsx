@@ -4,8 +4,9 @@ import {IndexRoute, Router, Route, Redirect, useRouterHistory} from 'react-route
 import {createHistory} from 'history';
 import Session from 'Session';
 import App from 'App';
-import Login from 'Login';
 import LedNet from 'LedNet';
+import Login from 'Login';
+import Settings from 'Settings';
 
 /* Session helpers */
 const requireAuth = (nextState, replace) => {
@@ -30,6 +31,7 @@ render((
 		<Route path="/" component={App}>
 			<IndexRoute component={LedNet} onEnter={requireAuth} />
 			<Route path="login" component={Login} onEnter={redirectIfAuth} />
+			<Route path="settings" component={Settings} onEnter={requireAuth} />
 			<Redirect from="*" to="/" />
 		</Route>
 	</Router>

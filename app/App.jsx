@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router';
 import Octicon from 'react-octicon';
 import Session from 'Session';
 
@@ -23,9 +24,16 @@ class App extends React.Component {
 			<root>
 				<header>
 					<h1>
-						<Octicon mega name="light-bulb" />LedNet
+						<Link to="/">
+							<Octicon mega name="light-bulb" />LedNet
+						</Link>
 					</h1>
-					{this.state.session ? <a href={BASENAME + "/logout"} onClick={this.logout}>Log-out</a> : ''}
+					{this.state.session && (
+						<span>
+							<a href={BASENAME + "/logout"} onClick={this.logout}>Log-out</a>
+							<Link to="/settings"><Octicon name="settings" /></Link>
+						</span>
+					)}
 				</header>
 				<route>
 					{this.props.children}

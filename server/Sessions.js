@@ -88,4 +88,25 @@ module.exports = (app) => {
 		req.logout();
 		res.redirect(Config.basename);
 	});
+	app.post('/user', (req, res) => {
+		if(!req.user) return res.status(401).end();
+		req.checkBody('email').notEmpty().isEmail();
+		req.checkBody('currentPassword').notEmpty();
+		req.checkBody('password').notEmpty();
+		req.getValidationResult().then((result) => {
+			if(!result.isEmpty()) return res.status(400).end();
+			req.user.comparePassword(req.body.currentPassword, (err, isMatch) => {
+				if(!isMatch) return res.status(401).end();
+				req.user.email = req.body.email;
+				req.user.password = req.body.password;
+				req.user.save((err) => {
+					if(err) res.status(500).end();
+					res.json({
+						id: req.user.id,
+						email: req.user.email
+					});
+				});
+			});
+		});
+	});
 };
