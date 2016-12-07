@@ -4,7 +4,8 @@ const LEDS = [];
 const CLIENTS = [];
 
 /* UpdateLed Helper */
-const UpdateLed = (id, state, from) => {
+let timeout = null;
+const UpdateLed = (id, state, from, delay) => {
 	for(let i=0; i<LEDS.length; i++) {
 		const led = LEDS[i];
 		if(led.id === id) {
@@ -27,6 +28,15 @@ const UpdateLed = (id, state, from) => {
 				led.state.color.b,
 				led.state.mode
 			]), () => {});
+
+			timeout !== null && clearTimeout(timeout);
+			delay && (timeout = setTimeout(() => {
+				UpdateLed(id, {
+					color: {r: 0, g: 0, b: 0},
+					mode: 0
+				});
+				timeout = null;
+			}, delay));
 
 			break;
 		}
@@ -157,7 +167,6 @@ module.exports = (app) => {
 	});
 
 	/* Piwik endpoint */
-	let timeout;
 	app.post('/piwik', (req, res) => {
 		req.checkBody('id').notEmpty().isInt();
 		req.getValidationResult().then((result) => {
@@ -171,20 +180,15 @@ module.exports = (app) => {
 				UpdateLed(ledID, {
 					color: {r: 0, g: 0, b: 255},
 					mode: 1
-				});
+				}, null, 10000);
 			}
 			if(siteID === 2) {
 				// voxels.es
 				UpdateLed(ledID, {
 					color: {r: 255, g: 0, b: 0},
 					mode: 1
-				});
+				}, null, 10000);
 			}
-			timeout && clearTimeout(timeout);
-			timeout = setTimeout(() => UpdateLed(ledID, {
-				color: {r: 0, g: 0, b: 0},
-				mode: 0
-			}), 10000);
 
 			res.end();
 		});
