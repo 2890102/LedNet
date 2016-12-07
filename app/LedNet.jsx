@@ -42,7 +42,7 @@ class LedNet extends React.Component {
 		this.updateColor = this.updateColor.bind(this);
 		this.updateMode = this.updateMode.bind(this);
 	}
-	componentDidMount() {
+	componentWillMount() {
 		this.connect();
 	}
 	componentWillUnmount() {
