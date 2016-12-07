@@ -36,6 +36,7 @@ struct {
 	HIGH,
 	0
 };
+unsigned long lastPing = 0;
 struct {
 	String ssid;
 	String password;
@@ -212,6 +213,7 @@ void setup() {
 			break;
 			case WStype_DISCONNECTED:
 				Reset();
+				lastPing = millis();
 			break;
 		}
 	});
@@ -224,7 +226,16 @@ void loop() {
 
 	unsigned long time = millis();
 
-	/* Read button */
+	/* Ping server every 5 minutes */
+	if((time - lastPing) >= 300000) {
+		lastPing = time;
+		if(!socket.sendPing()) {
+			/* Connection error! */
+			ESP.restart();
+		}
+	}
+
+	/* Handle button */
 	const byte read = digitalRead(BUTTON);
 	if(button.state != read && (time - button.debounce) > 10) {
 		button.debounce = time;
