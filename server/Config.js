@@ -5,5 +5,6 @@ module.exports = {
 	port: process.env.PORT || 8080,
 	hostname: process.env.HOSTNAME || '',
 	sessionSecret: process.env.SESSION_SECRET || 'Your Session Secret goes here',
+	basename: process.env.BASENAME || '/',
 	production: process.env.NODE_ENV === 'production'
 };

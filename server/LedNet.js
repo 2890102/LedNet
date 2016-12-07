@@ -35,7 +35,7 @@ const UpdateLed = (id, state, from) => {
 
 module.exports = (app) => {
 	/* LEDs endpoint */
-	app.ws('/led/:id', function(led, req) {
+	app.ws('/led/:id', (led, req) => {
 		req.checkParams('id').notEmpty().isInt();
 		req.getValidationResult().then((result) => {
 			if(!result.isEmpty()) return led.close();
@@ -111,7 +111,9 @@ module.exports = (app) => {
 	});
 
 	/* Clients endpoint */
-	app.ws('/', function(client, req) {
+	app.ws('/', (client, req) => {
+		if(!req.user) return client.close();
+
 		/* Init the client state */
 		client.id = client._socket._handle.fd;
 		CLIENTS.push(client);

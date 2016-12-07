@@ -30,29 +30,51 @@ h1, h2, h3, h4, h5
 	font-weight: inherit
 	margin: 0
 
-a
-	color: inherit
-	text-decoration: none
-	cursor: pointer
-
-input[type="number"]
-	display: inline-block
-	width: 33.33%
-	margin: 0
-
-input[type="color"]
-	display: block
-	width: 100%
-	margin: 0
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], button[type="submit"]
+	font-family: inherit
+	font-size: inherit
+	font-weight: inherit
 
 header
 	background: #E2B031
 	padding: 15px
-	h1 .mega-octicon
-		margin-right: 10px
+	h1
+		display: inline-block
+		.mega-octicon
+			margin-right: 10px
+	a
+		float: right
+		padding: 5px 15px
+		text-decoration: none
+		color: #fff
+		background: #141414
+		border-radius: 4px
 
 route
 	padding: 30px
 
 led
 	margin-bottom: 15px
+	input[type="number"]
+		display: inline-block
+		width: 33.33%
+		margin: 0
+	input[type="color"]
+		display: block
+		width: 100%
+		margin: 0
+
+form.login
+	width: 300px
+	margin: 0 auto
+	&, label, input[type="email"], input[type="password"], button[type="submit"]
+		display: block
+	input[type="email"], input[type="password"]
+		width: 100%
+		padding: 10px 5px
+		margin-bottom: 10px
+	button[type="submit"]
+		padding: 10px 0
+		text-align: center
+		width: 150px
+		margin: 20px auto
