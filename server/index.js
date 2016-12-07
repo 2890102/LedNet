@@ -1,25 +1,29 @@
 'use strict';
 
-const production = process.env.NODE_ENV === 'production';
+const Config = require('./Config.js');
 const bodyParser = require('body-parser');
 const express = require('express');
 const expressValidator = require('express-validator');
 const helmet = require('helmet');
 const path = require('path');
+const Sessions = require('./Sessions.js');
 const LedNet = require('./LedNet.js');
 
 /* Express */
 const app = express();
-production && app.use(helmet());
+Config.production && app.use(helmet());
 app.use(bodyParser.json());
 app.use(expressValidator());
 require('express-ws')(app, undefined, {wsOptions: {clientTracking: false}});
+
+/* Sessions */
+Sessions(app);
 
 /* Backend */
 LedNet(app);
 
 /* App server */
-if(production) {
+if(Config.production) {
 	app.use(express.static(path.join(__dirname, '../dist')));
 	app.get('*', (req, res) => (
 		res.sendFile(path.join(__dirname, '../dist/index.html'))
@@ -28,10 +32,10 @@ if(production) {
 	const webpack = require('webpack');
 	const webpackMiddleware = require('webpack-dev-middleware');
 	const webpackHotMiddleware = require('webpack-hot-middleware');
-	const config = require('../webpack.config.js');
-	const compiler = webpack(config);
+	const webpackConfig = require('../webpack.config.js');
+	const compiler = webpack(webpackConfig);
 	const middleware = webpackMiddleware(compiler, {
-		publicPath: config.output.publicPath,
+		publicPath: webpackConfig.output.publicPath,
 		contentBase: 'src',
 		stats: {
 			colors: true,
@@ -50,4 +54,4 @@ if(production) {
 	});
 }
 
-app.listen(process.env.PORT || 8080, process.env.HOSTNAME || '');
+app.listen(Config.port, Config.hostname);

@@ -1,5 +1,4 @@
 import React from 'react';
-import {Link} from 'react-router';
 import Octicon from 'react-octicon';
 
 class App extends React.Component {
@@ -8,9 +7,7 @@ class App extends React.Component {
 			<root>
 				<header>
 					<h1>
-						<Link to="/">
-							<Octicon mega name="light-bulb" />LedNet
-						</Link>
+						<Octicon mega name="light-bulb" />LedNet
 					</h1>
 				</header>
 				<route>
