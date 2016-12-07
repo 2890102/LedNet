@@ -26,11 +26,11 @@ if(!options.email || !options.password) return console.log(getUsage([
 	}
 ]));
 
-const config = require('../server/config.js');
+const Config = require('../server/Config.js');
 const mongoose = require('mongoose');
 const User = require('../server/User.js');
 mongoose.Promise = global.Promise;
-mongoose.connect(config.mongoURI, (err) => {
+mongoose.connect(Config.mongoURI, (err) => {
 	if(err) return console.log('Error: Couldn\'t connect to the database!');
 	const user = new User({
 		email: options.email,
