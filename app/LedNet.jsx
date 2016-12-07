@@ -2,12 +2,45 @@ import React from 'react';
 import update from 'immutability-helper';
 import {hex2rgb, rgb2hex} from 'hexrgb';
 
+class Led extends React.PureComponent {
+	render() {
+		const {id, state: {color: {r, g, b}, mode}, index, updateColor, updateMode} = this.props;
+		return (
+			<led>
+				<h5>ChipId: {id}</h5>
+				<div>
+					<input type="number" min="0" max="255" value={r} onChange={(e) => updateColor(index, 'r', e.target.value)} />
+					<input type="number" min="0" max="255" value={g} onChange={(e) => updateColor(index, 'g', e.target.value)} />
+					<input type="number" min="0" max="255" value={b} onChange={(e) => updateColor(index, 'b', e.target.value)} />
+				</div>
+				<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => updateColor(index, 'picker', e.target.value)} />
+				<div>
+					<label>
+						<input type="radio" checked={mode === 0} value="0" onChange={(e) => updateMode(index, e.target.value)} />
+						ON
+					</label>
+					<label>
+						<input type="radio" checked={mode === 1} value="1" onChange={(e) => updateMode(index, e.target.value)} />
+						Pulse
+					</label>
+					<label>
+						<input type="radio" checked={mode === 2} value="2" onChange={(e) => updateMode(index, e.target.value)} />
+						OFF
+					</label>
+				</div>
+			</led>
+		);
+	}
+}
+
 class LedNet extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			leds: []
 		};
+		this.updateColor = this.updateColor.bind(this);
+		this.updateMode = this.updateMode.bind(this);
 	}
 	componentDidMount() {
 		this.connect();
@@ -26,6 +59,7 @@ class LedNet extends React.Component {
 				return;
 			}
 			let leds;
+			let index;
 			switch(message.event) {
 				case 'init':
 					leds = message.leds;
@@ -37,10 +71,12 @@ class LedNet extends React.Component {
 					}]});
 				break;
 				case 'remove':
-					leds = this.state.leds.filter((led) => (led.id !== message.led));
+					index = this.state.leds.findIndex((led) => (led.id === message.led));
+					if(index === -1) return;
+					leds = update(this.state.leds, {$splice: [[index, 1]]});
 				break;
 				case 'update':
-					const index = this.state.leds.findIndex((led) => (led.id === message.led));
+					index = this.state.leds.findIndex((led) => (led.id === message.led));
 					if(index === -1) return;
 					leds = update(this.state.leds, {[index]: {state: {$set: message.state}}});
 				break;
@@ -82,30 +118,8 @@ class LedNet extends React.Component {
 	render() {
 		return (
 			<div>
-				{this.state.leds.map(({id, state: {color: {r, g, b}, mode}}, i) => (
-					<led key={i}>
-						<h5>ChipId: {id}</h5>
-						<div>
-							<input type="number" min="0" max="255" value={r} onChange={(e) => this.updateColor(i, 'r', e.target.value)} />
-							<input type="number" min="0" max="255" value={g} onChange={(e) => this.updateColor(i, 'g', e.target.value)} />
-							<input type="number" min="0" max="255" value={b} onChange={(e) => this.updateColor(i, 'b', e.target.value)} />
-						</div>
-						<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => this.updateColor(i, 'picker', e.target.value)} />
-						<div>
-							<label>
-								<input type="radio" checked={mode === 0} value="0" onChange={(e) => this.updateMode(i, e.target.value)} />
-								ON
-							</label>
-							<label>
-								<input type="radio" checked={mode === 1} value="1" onChange={(e) => this.updateMode(i, e.target.value)} />
-								Pulse
-							</label>
-							<label>
-								<input type="radio" checked={mode === 2} value="2" onChange={(e) => this.updateMode(i, e.target.value)} />
-								OFF
-							</label>
-						</div>
-					</led>
+				{this.state.leds.map((led, index) => (
+					<Led key={index} index={index} updateColor={this.updateColor} updateMode={this.updateMode} {...led} />
 				))}
 			</div>
 		)
