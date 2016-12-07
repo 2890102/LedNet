@@ -230,7 +230,7 @@ void loop() {
 		button.debounce = time;
 		if((button.state = read) == LOW) {
 			Reset();
-			uint8_t payload[4] = {1};
+			uint8_t payload[1] = {1};
 			socket.sendBIN(payload, 1);
 		}
 	}
