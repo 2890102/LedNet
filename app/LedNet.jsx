@@ -94,13 +94,9 @@ class LedNet extends React.Component {
 		if(c === 'picker') {
 			const rgb = hex2rgb(value, true);
 			if(rgb === null) color = {r: 0, g: 0, b: 0};
-			else color = {
-				r: Math.min(Math.max(rgb[0], 0), 255),
-				g: Math.min(Math.max(rgb[1], 0), 255),
-				b: Math.min(Math.max(rgb[2], 0), 255)
-			};
+			else color = {r: rgb[0], g: rgb[1], b: rgb[2]};
 		} else {
-			color = update(this.state.leds[i].state.color, {[c]: {$set: parseInt(value, 10) || 0}});
+			color = update(this.state.leds[i].state.color, {[c]: {$set: Math.min(Math.max(parseInt(value, 10) || 0, 0), 255)}});
 		}
 		this.update(i, update(this.state.leds[i].state, {color: {$set: color}}));
 	}
