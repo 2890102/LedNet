@@ -6,38 +6,83 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>LedNet - Setup</title>
 		<style>
-			* {
-				margin: 0;
+			*, *:before, *:after {
 				box-sizing: border-box;
+			}
+			html {
+				font-family: serif;
+				font-weight: 400;
+				font-size: 14px;
+				line-height: 23px;
+				vertical-align: baseline;
+				font-smoothing: antialiased;
+				text-size-adjust: 100%;
+			}
+			body {
+				background: #141414;
+				color: #fff;
+				margin: 0;
+			}
+			header {
+				display: block;
+				background: #E2B031;
+				padding: 15px;
+			}
+			header h1 {
+				font-weight: inherit;
+				margin: 0;
 			}
 			label {
 				display: block;
 			}
-			input, select {
-				width: 100%;
-				margin-bottom: 10px;
-			}
-			button {
+			select, input[type="text"], input[type="password"], button[type="submit"] {
 				display: block;
+				font-family: inherit;
+				font-size: inherit;
+				font-weight: inherit;
+			}
+			select, input[type="text"], input[type="password"] {
 				width: 100%;
+				padding: 10px 5px;
+			}
+			spacer {
+				display: block;
+				height: 10px;
+			}
+			button[type="submit"] {
 				padding: 10px 0;
+				text-align: center;
+				width: 150px;
+				margin: 30px auto;
 			}
 			form {
-				width: 300px;
-				margin: 150px auto;
+				max-width: 330px;
+				padding: 0 15px;
+				margin: 30px auto;
 			}
 		</style>
 	</head>
 	<body>
+		<header>
+			<h1>
+				LedNet
+			</h1>
+		</header>
 		<form method="post" action="/setup">
 			<label>SSID</label>
 			<input type="text" name="ssid" required>
-			<label>Password</label>
-			<input type="text" name="password" required>
+			<spacer>&nbsp;</spacer>
+			<label>
+				Password
+			</label>
+			<input id="password" type="password" name="password" class="nm" required>
+			<label>
+				<input type="checkbox" onchange="document.getElementById('password').type = this.checked ? 'text' : 'password'"> Show password
+			</label>
 			<button type="submit">Save &amp; restart</button>
 		</form>
 		<script>
-			fetch('networks.json')
+			fetch('/networks.json')
 			.then(function(response) {
 				return response.json();
 			})

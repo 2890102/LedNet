@@ -1,11 +1,3 @@
-=media($type)
-	@if $type == tablet
-		@media only screen and (min-width: 768px)
-			@content
-	@else if $type == desktop
-		@media only screen and (min-width: 992px)
-			@content
-
 *, *:before, *:after
 	box-sizing: border-box
 
@@ -23,7 +15,7 @@ body
 	color: #fff
 	margin: 0
 
-mount, app, route, led
+mount, app, header, route, led
 	display: block
 
 h1, h2, h3, h4, h5
