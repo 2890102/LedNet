@@ -3,6 +3,8 @@ LedNet
 
 A centralized network of pixels
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 **License:**
 
 The MIT License (MIT)

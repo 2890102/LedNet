@@ -1,0 +1,8 @@
+{
+  "name": "LedNet",
+  "description": "A centralized network of pixels",
+  "repository": "https://github.com/danielesteban/LedNet",
+  "addons" : [
+  	"mongolab"
+  ]
+}
