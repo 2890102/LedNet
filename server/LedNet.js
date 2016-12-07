@@ -28,10 +28,9 @@ const UpdateLed = (id, state, from) => {
 				led.state.mode
 			]), () => {});
 
-			return true;
+			break;
 		}
 	}
-	return false;
 };
 
 module.exports = (app) => {

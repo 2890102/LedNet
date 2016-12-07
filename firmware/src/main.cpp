@@ -30,6 +30,13 @@ struct {
 	0, 0, 0
 };
 struct {
+	byte state;
+	unsigned long debounce;
+} button = {
+	HIGH,
+	0
+};
+struct {
 	String ssid;
 	String password;
 	bool setup;
@@ -214,13 +221,23 @@ void setup() {
 void loop() {
 	if(config.setup) return;
 	socket.loop();
-	if(digitalRead(BUTTON) == LOW) {
-		Reset();
-		uint8_t payload[4] = {1};
-		socket.sendBIN(payload, 1);
+
+	unsigned long time = millis();
+
+	/* Read button */
+	const byte read = digitalRead(BUTTON);
+	if(button.state != read && (time - button.debounce) > 10) {
+		button.debounce = time;
+		if((button.state = read) == LOW) {
+			Reset();
+			uint8_t payload[4] = {1};
+			socket.sendBIN(payload, 1);
+		}
 	}
+
+	/* Pulse animation */
 	if(mode == MODE_PULSE) {
-		unsigned long step = millis() % (STEPS * 2);
+		int step = time % (STEPS * 2);
 		if(step > STEPS) step = (STEPS * 2) - step;
 		double amount = (double) step / STEPS;
 		Led(
