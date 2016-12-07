@@ -25,7 +25,7 @@ class App extends React.Component {
 					<h1>
 						<Octicon mega name="light-bulb" />LedNet
 					</h1>
-					{this.state.session ? <a href="/logout" onClick={this.logout}>Log-out</a> : ''}
+					{this.state.session ? <a href={BASENAME + "/logout"} onClick={this.logout}>Log-out</a> : ''}
 				</header>
 				<route>
 					{this.props.children}
