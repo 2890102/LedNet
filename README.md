@@ -5,7 +5,21 @@ A centralized network of pixels
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-**License:**
+### App:
+
+* Edit server config in: [server/Config.js](server/Config.js)
+* Install dependencies: `npm install`
+* Run server: `npm start`
+
+### Firmware:
+
+* Edit config #defines in: [firmware/src/main.cpp](firmware/src/main.cpp)
+* Flash the ESP-01: `cd firmware && platformio run`
+* Upload the SPIFFS: `platformio run --target=uploadfs`
+
+---
+
+#### License:
 
 The MIT License (MIT)
 
