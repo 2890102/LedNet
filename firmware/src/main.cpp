@@ -105,9 +105,12 @@ void WiFiSetup() {
 	});
 	server->begin();
 
-	/* Announce in the network */
+	/* Announce in network */
 	MDNS.begin("lednet");
 	MDNS.addService("http", "tcp", 80);
+
+	/* Setup built-in LED */
+	pinMode(LED_BUILTIN, OUTPUT);
 }
 
 /* LED update helper */
@@ -192,10 +195,20 @@ void setup() {
 
 /* Main loop */
 void loop() {
-	if(config.setup) return;
-	socket.loop();
-
 	unsigned long time = millis();
+
+	if(config.setup) {
+		/* Flash built-in LED */
+		if((time - lastPing) >= 500) {
+			lastPing = time;
+			mode = mode == MODE_ON ? MODE_OFF : MODE_ON;
+			digitalWrite(LED_BUILTIN, mode == MODE_ON ? LOW : HIGH);
+		}
+		return;
+	}
+
+	/* Handle client */
+	socket.loop();
 
 	/* Ping server every 5 minutes */
 	if((time - lastPing) >= 300000) {
