@@ -2,6 +2,7 @@
 
 const Config = require('./Config.js');
 const bodyParser = require('body-parser');
+const compression = require('compression');
 const express = require('express');
 const expressValidator = require('express-validator');
 const helmet = require('helmet');
@@ -11,7 +12,10 @@ const LedNet = require('./LedNet.js');
 
 /* Express */
 const app = express();
-Config.production && app.use(helmet());
+if(Config.production) {
+	app.use(compression());
+	app.use(helmet());
+}
 app.use(bodyParser.json());
 app.use(expressValidator());
 require('express-ws')(app, undefined, {wsOptions: {clientTracking: false}});
