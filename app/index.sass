@@ -45,10 +45,20 @@ header
 		margin-left: 6px
 
 route
-	padding: 30px
+	padding: 30px 15px
 
 led
+	background: lighten(#141414, 5%)
+	padding: 15px
 	margin-bottom: 15px
+	&, .piwik
+		border-radius: 2px
+    box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px
+	h5 .action
+		cursor: pointer
+		float: right
+		.octicon
+			margin-right: 5px
 	input[type="number"]
 		display: inline-block
 		width: 33.33%
@@ -57,6 +67,23 @@ led
 		display: block
 		width: 100%
 		margin: 0
+	.mode
+		label
+			display: inline-block
+			margin: 5px 5px 5px 0
+		input[type="radio"]
+			margin-right: 5px
+	.piwik
+		background: lighten(#141414, 10%)
+		padding-bottom: 5px
+		> div
+			padding: 5px 10px
+			h5 .action
+				display: none
+				.octicon
+					margin-right: 0
+			&:hover h5 .action
+				display: inline
 
 form.login
 	width: 300px

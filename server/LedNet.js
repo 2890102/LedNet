@@ -175,13 +175,27 @@ module.exports = (app) => {
 			}
 			switch(message.event) {
 				case 'update':
+					const piwik = [];
+					(message.state.piwik || []).forEach((hook) => {
+						const site = parseInt(hook.site, 10) || 0;
+						if(!site || !hook.color) return;
+						piwik.push({
+							site,
+							color: {
+								r: parseInt(hook.color.r, 10) || 0,
+								g: parseInt(hook.color.g, 10) || 0,
+								b: parseInt(hook.color.b, 10) || 0
+							}
+						})
+					});
 					UpdateLed(parseInt(message.led, 10) || 0, {
 						color: {
 							r: parseInt(message.state.color.r, 10) || 0,
 							g: parseInt(message.state.color.g, 10) || 0,
 							b: parseInt(message.state.color.b, 10) || 0
 						},
-						mode: parseInt(message.state.mode, 10) || 0
+						mode: parseInt(message.state.mode, 10) || 0,
+						piwik
 					}, client.id);
 				break;
 			}
@@ -199,24 +213,19 @@ module.exports = (app) => {
 		req.getValidationResult().then((result) => {
 			if(!result.isEmpty()) return res.sendStatus(400).end();
 			const siteID = req.sanitizeBody('id').toInt();
-
-			/* SUPER HACKY ALERT !!! */
-			const ledID = 14150704;
-			if(siteID === 1) {
-				// dani.gatunes.com
-				UpdateLed(ledID, {
-					color: {r: 0, g: 0, b: 255},
-					mode: 1
-				}, null, 10000);
+			/* Check online LEDs hooks */
+			for(let i=0; i<LEDS.length; i++) {
+				const led = LEDS[i];
+				led.state.piwik.forEach((hook) => {
+					if(hook.site === siteID) {
+						/* Pulse the LED for 10 seconds */
+						UpdateLed(led.id, {
+							color: hook.color,
+							mode: 1
+						}, null, 10000);
+					}
+				});
 			}
-			if(siteID === 2) {
-				// voxels.es
-				UpdateLed(ledID, {
-					color: {r: 255, g: 0, b: 0},
-					mode: 1
-				}, null, 10000);
-			}
-
 			res.end();
 		});
 	});
