@@ -4,7 +4,6 @@ const production = process.env.NODE_ENV === 'production';
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const appPath = path.resolve(__dirname, 'app');
@@ -56,13 +55,6 @@ module.exports = {
 				)
 			},
 			{
-				test: /\.(jpg|jpeg|png|gif)$/,
-				loader: 'file',
-				query: {
-					name: 'snapshots/' + (production ? '[hash].[ext]' : '[name].[ext]')
-				}
-			},
-			{
 				test: /\.(otf|eot|svg|ttf|woff|woff2)$/,
 				loader: 'file',
 				query: {
@@ -99,7 +91,6 @@ module.exports = {
 				warnings: false,
 				screw_ie8: true
 			}
-		}),
-		new ImageminPlugin()
+		})
 	] : [])
 };

@@ -31,7 +31,6 @@
     "helmet": "^3.1.0",
     "hexrgb": "0.0.2",
     "html-webpack-plugin": "^2.24.1",
-    "imagemin-webpack-plugin": "^1.4.4",
     "immutability-helper": "^2.0.0",
     "mongoose": "^4.7.1",
     "node-sass": "^3.13.0",
