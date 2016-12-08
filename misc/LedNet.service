@@ -1,0 +1,25 @@
+[Unit]
+Description=LedNet server
+After=mongodb.service
+Requires=mongodb.service
+After=redis-server.service
+Requires=redis-server.service
+
+[Service]
+ExecStart=/usr/local/bin/node /var/www/LedNet/server/
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=LedNet
+User=www-data
+Group=www-data
+Environment=MONGODB_URI=mongodb://localhost/LedNet
+Environment=REDIS_URL=redis://localhost:6379/0
+Environment=HOSTNAME=localhost
+Environment=PORT=8080
+Environment=BASENAME=/lednet/
+Environment=SESSION_SECRET=YourSessionSecretGoesHere
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
