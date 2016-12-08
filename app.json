@@ -1,6 +1,7 @@
 {
   "name": "LedNet",
   "addons" : [
-  	"mongolab"
+    "heroku-redis",
+    "mongolab"
   ]
 }

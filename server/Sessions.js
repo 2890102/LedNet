@@ -2,9 +2,10 @@
 
 const Config = require('./Config.js');
 const connectMongo = require('connect-mongo');
-const localStrategy = require('passport-local');
+const connectRedis = require('connect-redis');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const localStrategy = require('passport-local');
 const session = require('express-session');
 const User = require('./User.js');
 
@@ -41,8 +42,8 @@ module.exports = (app) => {
 	});
 
 	/* Session */
+	const sessionStore = (Config.redisURI ? connectRedis : connectMongo)(session);
 	app.set('trust proxy', 'loopback');
-	const MongoStore = connectMongo(session);
 	app.use(session({
 		resave: false,
 		saveUninitialized: false,
@@ -53,7 +54,7 @@ module.exports = (app) => {
 			httpOnly: true,
 			secure: Config.production
 		},
-		store: new MongoStore({mongooseConnection: mongoose.connection})
+		store: new sessionStore(Config.redisURI ? {url: Config.redisURI} : {mongooseConnection: mongoose.connection})
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
