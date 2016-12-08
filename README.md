@@ -1,17 +1,18 @@
-LedNet
-==============================
+# LedNet
 
-A centralized network of pixels
+[![Dependency Status](https://david-dm.org/danielesteban/LedNet.svg)](https://david-dm.org/danielesteban/LedNet) [![devDependency Status](https://david-dm.org/danielesteban/LedNet/dev-status.svg)](https://david-dm.org/danielesteban/LedNet?type=dev)
+
+> A centralized network of pixels
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-### App:
+## App server:
 
 * Edit server config in: [server/Config.js](server/Config.js)
 * Install dependencies: `npm install`
 * Run server: `npm start`
 
-### Firmware:
+## Firmware:
 
 * Edit server/hardware config in: [firmware/src/config.h](firmware/src/config.h)
 * Flash the ESP-01: `cd firmware && platformio run`
@@ -19,7 +20,7 @@ A centralized network of pixels
 
 ---
 
-#### License:
+### License:
 
 The MIT License (MIT)
 
