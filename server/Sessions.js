@@ -9,26 +9,6 @@ const session = require('express-session');
 const User = require('./User.js');
 
 module.exports = (app) => {
-	/* Mongoose connection */
-	const connect = () => {
-		mongoose.connect(Config.mongoURI, (err) => {
-			if(err) return console.log(err);
-			/* Check for existing users */
-			User.count({}, (err, count) => {
-				if(count > 0) return;
-				/* Populate default user */
-				(new User({
-					email: Config.defaultUser.email,
-					password: Config.defaultUser.password
-				})).save();
-			});
-		});
-	};
-	mongoose.Promise = global.Promise;
-	mongoose.connection.on('error', console.log);
-	mongoose.connection.on('disconnected', connect);
-	connect();
-
 	/* Passport setup */
 	passport.serializeUser((user, done) => {
 		done(null, user.id);
@@ -46,6 +26,19 @@ module.exports = (app) => {
 			});
 		});
 	}));
+
+	/* Default user population */
+	mongoose.connection.once('connected', () => {
+		/* Check for existing users */
+		User.count({}, (err, count) => {
+			if(count > 0) return;
+			/* Populate default user */
+			(new User({
+				email: Config.defaultUser.email,
+				password: Config.defaultUser.password
+			})).save();
+		});
+	});
 
 	/* Session */
 	app.set('trust proxy', 'loopback');

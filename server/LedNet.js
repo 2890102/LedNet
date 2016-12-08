@@ -1,5 +1,7 @@
 'use strict';
 
+const Led = require('./Led.js');
+
 const LEDS = [];
 const CLIENTS = [];
 
@@ -9,7 +11,8 @@ const UpdateLed = (id, state, from, delay) => {
 	for(let i=0; i<LEDS.length; i++) {
 		const led = LEDS[i];
 		if(led.id === id) {
-			led.state = state;
+			/* Update state */
+			led.state = Object.assign(led.state, state);
 
 			/* Notify all clients */
 			CLIENTS.forEach((client) => {
@@ -46,18 +49,13 @@ const UpdateLed = (id, state, from, delay) => {
 module.exports = (app) => {
 	/* LEDs endpoint */
 	app.ws('/led/:id', (led, req) => {
+		/* Check & Sanitize request params */
 		req.checkParams('id').notEmpty().isInt();
 		req.getValidationResult().then((result) => {
 			if(!result.isEmpty()) return led.close();
-			/* Init the LED state */
 			led.id = req.sanitizeParams('id').toInt();
-			led.state = {
-				color: {r: 0, g: 0, b: 0},
-				mode: 0
-			};
 
 			/* Check for an on-going session */
-			let notify = true;
 			for(let i=0; i<LEDS.length; i++) {
 				if(LEDS[i].id === led.id) {
 					/* LED already connected. Steal it's state and force disconnect. */
@@ -65,11 +63,35 @@ module.exports = (app) => {
 					LEDS[i].removeListener('close', LEDS[i].listeners('close')[LEDS[i].listenerCount('close') - 1]);
 					LEDS[i].close();
 					LEDS.splice(i, 1);
-					notify = false;
-					break;
+					return push(false);
 				}
 			}
 
+			/* Fetch LED state from DB */
+			Led.findOne({_id: led.id}).select('-_id').lean().exec((err, state) => {
+				if(state) {
+					delete state.__v;
+					led.state = state;
+					return push(true);
+				}
+
+				/* Create initial LED state */
+				state = new Led({
+					_id: led.id,
+					color: {r: 0, g: 0, b: 0},
+					mode: 0
+				});
+				state.save(() => {
+					state = state.toObject();
+					delete state._id;
+					delete state.__v;
+					led.state = state;
+					push(true);
+				});
+			});
+		});
+
+		const push = (notify) => {
 			/* Push the LED & notify all clients */
 			LEDS.push(led);
 			notify && CLIENTS.forEach((client) => {
@@ -82,12 +104,14 @@ module.exports = (app) => {
 
 			/* Handle disconnects */
 			led.on('close', () => {
+				/* Pop the LED */
 				for(let i=0; i<LEDS.length; i++) {
 					if(LEDS[i].id === led.id) {
 						LEDS.splice(i, 1);
 						break;
 					}
 				}
+
 				/* Notify all clients */
 				CLIENTS.forEach((client) => {
 					client.send(JSON.stringify({
@@ -95,6 +119,9 @@ module.exports = (app) => {
 						led: led.id
 					}), () => {});
 				});
+
+				/* Persist state */
+				Led.findByIdAndUpdate(led.id, {$set: led.state}, () => {});
 			});
 
 			/* Request handler */
@@ -117,7 +144,7 @@ module.exports = (app) => {
 				led.state.color.b,
 				led.state.mode
 			]), () => {});
-		});
+		};
 	});
 
 	/* Clients endpoint */

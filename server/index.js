@@ -6,6 +6,7 @@ const compression = require('compression');
 const express = require('express');
 const expressValidator = require('express-validator');
 const helmet = require('helmet');
+const mongoose = require('mongoose');
 const path = require('path');
 const Sessions = require('./Sessions.js');
 const LedNet = require('./LedNet.js');
@@ -19,6 +20,15 @@ if(Config.production) {
 app.use(bodyParser.json());
 app.use(expressValidator());
 require('express-ws')(app, undefined, {wsOptions: {clientTracking: false}});
+
+/* Mongoose */
+const connectMongoose = () => {
+	mongoose.connect(Config.mongoURI, (err) => (err && console.log(err)));
+};
+mongoose.Promise = global.Promise;
+mongoose.connection.on('error', console.log);
+mongoose.connection.on('disconnected', connectMongoose);
+connectMongoose();
 
 /* Sessions */
 Sessions(app);
