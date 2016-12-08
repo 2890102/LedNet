@@ -9,6 +9,8 @@
 ## Requirements:
 
 * [Node.js](https://nodejs.org/en/download/)
+* [MongoDB](https://www.mongodb.com/download-center)
+* [Redis](https://redis.io/download) (Optional for faster sessions)
 * [PlatformIO](http://docs.platformio.org/en/stable/installation.html)
 * A USB to 3.3v TTL dongle (I use Prolific's PL2303).
 * As many ESP-01 modules (or ESP8266 compatible) as you want.
