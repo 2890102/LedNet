@@ -11,10 +11,10 @@ class LedNet extends \Piwik\Plugin {
 	}
 
 	public function trackVisit($idSite, $params) {
-		$settings = StaticContainer::get('Piwik\Plugins\LedNet\SystemSettings');
+		$settings = StaticContainer::get('Piwik\Plugins\LedNet\Settings');
 		$serverURL = $settings->server->getValue();
 
-		if(is_null($serverURL)) {
+		if(empty($serverURL)) {
 			/* Not configured! */
 			return;
 		}

@@ -3,7 +3,7 @@
 	"description": "A centralized network of pixels",
 	"version": "1.0.0",
 	"require": {
-		"piwik": ">=2.0.0"
+		"piwik": ">=2.17.1-stable,<3.0.0"
 	},
 	"authors": [
 		{
