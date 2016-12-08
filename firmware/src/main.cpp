@@ -8,8 +8,8 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WebSocketsClient.h>
-#include "config.h"
-#include "gamma.h"
+#include "config.hpp"
+#include "gamma.hpp"
 
 /* Program modes */
 enum {

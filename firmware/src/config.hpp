@@ -1,5 +1,5 @@
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#ifndef __CONFIG_HPP__
+#define __CONFIG_HPP__
 
 /* Server config */
 #define SERVER_HOST "projects.gatunes.com"
@@ -11,4 +11,4 @@
 #define BUTTON 2
 #define LED 0
 
-#endif /* __CONFIG_H__ */
+#endif /* __CONFIG_HPP__ */

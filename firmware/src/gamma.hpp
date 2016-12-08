@@ -1,5 +1,5 @@
-#ifndef __GAMMA_H__
-#define __GAMMA_H__
+#ifndef __GAMMA_HPP__
+#define __GAMMA_HPP__
 
 /* Gamma correction lookup table */
 extern const prog_uint8_t gamma8[] PROGMEM;
@@ -22,4 +22,4 @@ const prog_uint8_t gamma8[] = {
 	215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255
 };
 
-#endif /* __GAMMA_H__ */
+#endif /* __GAMMA_HPP__ */

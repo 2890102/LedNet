@@ -14,7 +14,7 @@
 
 ## Firmware:
 
-* Edit server/hardware config in: [firmware/src/config.h](firmware/src/config.h)
+* Edit server/hardware config in: [firmware/src/config.hpp](firmware/src/config.hpp)
 * Flash the ESP-01: `cd firmware && platformio run`
 * Upload the SPIFFS: `platformio run --target=uploadfs`
 
