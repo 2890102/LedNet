@@ -1,9 +1,9 @@
 <?php
 namespace Piwik\Plugins\LedNet;
 
-class LedNet extends \Piwik\Plugin {
-	const SERVER_URL = 'https://projects.gatunes.com/lednet/';
+use Piwik\Container\StaticContainer;
 
+class LedNet extends \Piwik\Plugin {
 	public function registerEvents() {
 		return array(
 			'Tracker.Request.getIdSite' => 'trackVisit'
@@ -11,13 +11,21 @@ class LedNet extends \Piwik\Plugin {
 	}
 
 	public function trackVisit($idSite, $params) {
+		$settings = StaticContainer::get('Piwik\Plugins\LedNet\SystemSettings');
+		$serverURL = $settings->server->getValue();
+
+		if(is_null($serverURL)) {
+			/* Not configured! */
+			return;
+		}
+
 		if(!empty($params['link']) || !empty($params['e_c'])) {
 			/* Avoid outlinks & events */
 			return;
 		}
 
 		/* Notify the LedNet server on every pageview */
-		$req = curl_init(self::SERVER_URL . 'piwik');
+		$req = curl_init($serverURL . 'piwik');
 		$payload = json_encode(array(
 			'id' => $idSite
 		));
