@@ -11,7 +11,7 @@ class LedNet extends \Piwik\Plugin {
 	}
 
 	public function trackVisit($idSite, $params) {
-		if(!empty($params['link']) || !empty($params['e_c']) {
+		if(!empty($params['link']) || !empty($params['e_c'])) {
 			/* Avoid outlinks & events */
 			return;
 		}
