@@ -14,7 +14,9 @@ class Led extends React.PureComponent {
 					<input type="number" min="0" max="255" value={g} onChange={(e) => updateColor(index, 'g', e.target.value)} />
 					<input type="number" min="0" max="255" value={b} onChange={(e) => updateColor(index, 'b', e.target.value)} />
 				</div>
-				<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => updateColor(index, 'picker', e.target.value)} />
+				<div className="color">
+					<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => updateColor(index, 'picker', e.target.value)} />
+				</div>
 				<div className="mode">
 					<label>
 						<input type="radio" checked={mode === 0} value="0" onChange={(e) => updateMode(index, e.target.value)} />
@@ -44,7 +46,9 @@ class Led extends React.PureComponent {
 									<Octicon name="diff-removed" />
 								</a>
 							</h5>
-							<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => updateHook(index, i, e.target.value)} />
+							<div className="color">
+								<input type="color" value={rgb2hex('rgb(' + r + ',' + g + ',' + b + ')')} onChange={(e) => updateHook(index, i, e.target.value)} />
+							</div>
 						</div>
 					))}
 					{!piwik.length && (

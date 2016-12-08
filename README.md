@@ -4,6 +4,8 @@
 
 > A centralized network of pixels
 
+[![Screenshot](screenshot.png)](screenshot.png)
+
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 ## Requirements:

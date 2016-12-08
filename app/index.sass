@@ -48,9 +48,10 @@ route
 	padding: 30px 15px
 
 led
-	background: lighten(#141414, 5%)
 	padding: 15px
 	margin-bottom: 15px
+	&, input[type="color"]
+		background: lighten(#141414, 5%)
 	&, .piwik
 		border-radius: 2px
     box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px
@@ -63,19 +64,25 @@ led
 		display: inline-block
 		width: 33.33%
 		margin: 0
+	.color
+		margin: 0 -2px
 	input[type="color"]
 		display: block
 		width: 100%
+		height: 30px
 		margin: 0
+		border: 0
+		padding: 0
 	.mode
 		label
 			display: inline-block
-			margin: 5px 5px 5px 0
+			margin: 0 5px 5px 0
 		input[type="radio"]
 			margin-right: 5px
 	.piwik
-		background: lighten(#141414, 10%)
 		padding-bottom: 5px
+		&, input[type="color"]
+			background: lighten(#141414, 10%)
 		> div
 			padding: 5px 10px
 			h5 .action
