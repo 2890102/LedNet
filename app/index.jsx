@@ -10,14 +10,14 @@ import Settings from 'Settings';
 
 /* Session helpers */
 const requireAuth = (nextState, replace) => {
-  if(!Session.loggedIn()) {
-    replace({
-      pathname: '/login',
-      state: {
+	if(!Session.loggedIn()) {
+		replace({
+			pathname: '/login',
+			state: {
 				nextPathname: nextState.location.pathname
 			}
-    })
-  }
+		})
+	}
 }
 const redirectIfAuth = (nextState, replace) => {
 	if(Session.loggedIn()) replace({pathname: '/'});
