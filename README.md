@@ -6,17 +6,30 @@
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
+## Requirements:
+
+* [Node.js](https://nodejs.org/en/download/)
+* [PlatformIO](http://docs.platformio.org/en/stable/installation.html)
+* A USB to 3.3v TTL dongle (I use Prolific's PL2303).
+* As many ESP-01 modules (or ESP8266 compatible) as you want.
+* WS2812B LEDs with it's data line connected to each ESP's GPIO0.
+* Optional push buttons pulling each ESP's GPIO2 to ground.
+
 ## App server:
 
 * Edit server config in: [server/Config.js](server/Config.js)
 * Install dependencies: `npm install`
 * Run server: `npm start`
+* Visit: [http://localhost:8080](http://localhost:8080)
+* Login with the default user: `[email]: admin@led.net [pass]: adm!n`
 
 ## Firmware:
 
 * Edit server/hardware config in: [firmware/src/config.hpp](firmware/src/config.hpp)
-* Flash the ESP-01: `cd firmware && platformio run`
-* Upload the SPIFFS: `platformio run --target=uploadfs`
+* Pull GPI0 to ground and reset each ESP-01 into UART download mode.
+* Flash each ESP-01: `cd firmware && platformio run`
+* If you want to automate the network configuration: `echo -e "SSID\nPASSWORD" > firmware/data/config`.
+* Finally, reset each ESP-01 once again and upload the SPIFFS: `cd firmware && platformio run --target=uploadfs`
 
 ---
 

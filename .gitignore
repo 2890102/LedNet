@@ -1,5 +1,6 @@
+.DS_Store
+dist/
 firmware/.pioenvs
 firmware/.piolibdeps
+firmware/data/config
 node_modules/
-dist/
-.DS_Store
