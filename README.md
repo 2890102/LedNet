@@ -13,7 +13,7 @@ A centralized network of pixels
 
 ### Firmware:
 
-* Edit config #defines in: [firmware/src/main.cpp](firmware/src/main.cpp)
+* Edit server/hardware config in: [firmware/src/config.h](firmware/src/config.h)
 * Flash the ESP-01: `cd firmware && platformio run`
 * Upload the SPIFFS: `platformio run --target=uploadfs`
 
