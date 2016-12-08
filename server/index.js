@@ -19,7 +19,7 @@ if(Config.production) {
 }
 app.use(bodyParser.json());
 app.use(expressValidator());
-require('express-ws')(app, undefined, {wsOptions: {clientTracking: false}});
+const ws = require('express-ws')(app).getWss();
 
 /* Mongoose */
 const connectMongoose = () => {
@@ -68,4 +68,24 @@ if(Config.production) {
 	});
 }
 
-app.listen(Config.port, Config.hostname);
+/* Bind the server */
+const http = app.listen(Config.port, Config.hostname);
+
+/* Graceful exit */
+process.on('SIGTERM', function() {
+	const exit = function() {
+		setTimeout(function() {
+			process.exit(0);
+		}, 5000);
+	};
+	let count = ws.clients.length;
+	ws.clients.forEach(function(client) {
+		client.on('close', function() {
+			--count === 0 && exit();
+		});
+		client.close();
+	});
+	http.close(function() {
+		count === 0 && exit();
+	});
+});

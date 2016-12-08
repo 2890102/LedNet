@@ -112,6 +112,7 @@ class LedNet extends React.Component {
 			this.setState({leds});
 		};
 		this.socket.onclose = () => {
+			this.setState({leds: []});
 			setTimeout(this.connect.bind(this), 0);
 		};
 	}
