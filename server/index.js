@@ -43,7 +43,7 @@ if(Config.production) {
 	let indexCache = fs.readFileSync(indexPath, 'utf8');
 	fs.watchFile(indexPath, () => (indexCache = fs.readFileSync(indexPath, 'utf8')));
 	const index = (req, res) => (
-		res.send(Sessions.inject(indexCache, req.user))
+		res.set('Cache-Control', 'no-cache').send(Sessions.inject(indexCache, req.user))
 	);
 	app.get('/', index);
 	app.use(express.static(path.join(__dirname, '../dist'), {maxAge: 31536000}));
