@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const express = require('express');
 const expressValidator = require('express-validator');
+const fs = require('fs');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -37,11 +38,16 @@ Sessions(app);
 LedNet(app);
 
 /* App server */
+const indexPath = path.join(__dirname, '../dist/index.html');
 if(Config.production) {
+	let indexCache = fs.readFileSync(indexPath, 'utf8');
+	fs.watchFile(indexPath, () => (indexCache = fs.readFileSync(indexPath, 'utf8')));
+	const index = (req, res) => (
+		res.send(Sessions.inject(indexCache, req.user))
+	);
+	app.get('/', index);
 	app.use(express.static(path.join(__dirname, '../dist')));
-	app.get('*', (req, res) => (
-		res.sendFile(path.join(__dirname, '../dist/index.html'))
-	));
+	app.get('*', index);
 } else {
 	const webpack = require('webpack');
 	const webpackMiddleware = require('webpack-dev-middleware');
@@ -60,12 +66,13 @@ if(Config.production) {
 			modules: false
 		}
 	});
+	const index = (req, res) => (
+		res.send(Sessions.inject(middleware.fileSystem.readFileSync(indexPath, 'utf8'), req.user))
+	);
+	app.get('/', index);
 	app.use(middleware);
 	app.use(webpackHotMiddleware(compiler));
-	app.get('*', (req, res) => {
-		res.write(middleware.fileSystem.readFileSync(path.join(__dirname, '../dist/index.html')));
-		res.end();
-	});
+	app.get('*', index);
 }
 
 /* Bind the server */

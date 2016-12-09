@@ -2,12 +2,10 @@ import ee from 'event-emitter';
 
 class Session {
 	constructor() {
-		/* Restore session from localStorage */
-		try {
-			this.user = JSON.parse(localStorage.getItem('LedNet:Session'));
-		} catch(e) {
-			this.user = null;
-		}
+		/* Init session */
+		if(!window.__SESSION__) return;
+		this.user = window.__SESSION__;
+		delete window.__SESSION__;
 	}
 	req(method, payload, callback) {
 		fetch(BASENAME + '/' + method, {
@@ -33,12 +31,7 @@ class Session {
 			this.user = user;
 			this.emit('change', true);
 			callback && callback(true);
-			localStorage.setItem('LedNet:Session', JSON.stringify(user));
 		});
-	}
-	logout() {
-		this.emit('change', false);
-		localStorage.removeItem('LedNet:Session');
 	}
 	get() {
 		if(!this.loggedIn()) return;
@@ -50,7 +43,6 @@ class Session {
 			if(!user) return callback && callback(false);
 			this.user = user;
 			callback && callback(true);
-			localStorage.setItem('LedNet:Session', JSON.stringify(user));
 		});
 	}
 }

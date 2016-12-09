@@ -11,9 +11,9 @@ const outputPath = path.resolve(__dirname, 'dist');
 const publicPath = process.env.BASENAME || '/';
 
 module.exports = {
-	entry: (production ? [] : [
+	entry: (!production ? [
 		'webpack-hot-middleware/client?reload=true'
-	]).concat([
+	] : []).concat([
 		path.join(appPath, 'index.sass'),
 		appPath
 	]),
@@ -85,12 +85,12 @@ module.exports = {
 	].concat(!production ? [
 		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NoErrorsPlugin()
-	] : []).concat(production ? [
+	] : [
 		new webpack.optimize.UglifyJsPlugin({
 			compressor: {
 				warnings: false,
 				screw_ie8: true
 			}
 		})
-	] : [])
+	])
 };

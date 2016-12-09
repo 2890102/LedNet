@@ -104,3 +104,14 @@ module.exports = (app) => {
 		});
 	});
 };
+
+module.exports.inject = (index, user) => (
+	index.replace("<session>", user ?
+	'<script>' +
+		'window.__SESSION__=' + JSON.stringify({
+			id: user.id,
+			email: user.email
+		}) +
+	'</script>'
+	: '')
+);

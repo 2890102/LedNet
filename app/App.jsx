@@ -9,15 +9,11 @@ class App extends React.Component {
 		this.state = {
 			session: Session.loggedIn()
 		};
-		this.logout = this.logout.bind(this);
 	}
 	componentWillMount() {
 		Session.on('change', (loggedIn) => {
 			this.setState({session: loggedIn});
 		});
-	}
-	logout() {
-		Session.logout();
 	}
 	render() {
 		return (
@@ -30,7 +26,7 @@ class App extends React.Component {
 					</h1>
 					{this.state.session && (
 						<span>
-							<a href={BASENAME + "/logout"} onClick={this.logout}>Log-out</a>
+							<a href={BASENAME + "/logout"}>Log-out</a>
 							<Link to="/settings"><Octicon name="settings" /></Link>
 						</span>
 					)}
