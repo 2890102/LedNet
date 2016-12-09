@@ -8,42 +8,39 @@ const CLIENTS = [];
 /* UpdateLed Helper */
 let timeout = null;
 const UpdateLed = (id, state, from, delay) => {
-	for(let i=0; i<LEDS.length; i++) {
-		const led = LEDS[i];
-		if(led.id === id) {
-			/* Update state */
-			led.state = Object.assign(led.state, state);
+	const index = LEDS.findIndex((led) => (led.id === id));
+	if(index === -1) return;
 
-			/* Notify all clients */
-			CLIENTS.forEach((client) => {
-				if(from && client.id === from) return;
-				client.send(JSON.stringify({
-					event: 'update',
-					led: led.id,
-					state: led.state
-				}), () => {});
-			});
+	/* Update state */
+	const led = LEDS[index];
+	led.state = Object.assign(led.state, state);
 
-			/* Send the updated state to the LED */
-			led.send(new Buffer([
-				led.state.color.r,
-				led.state.color.g,
-				led.state.color.b,
-				led.state.mode
-			]), () => {});
+	/* Notify all clients */
+	CLIENTS.forEach((client) => {
+		if(from && client.id === from) return;
+		client.send(JSON.stringify({
+			event: 'update',
+			led: led.id,
+			state: led.state
+		}), () => {});
+	});
 
-			timeout !== null && clearTimeout(timeout);
-			delay && (timeout = setTimeout(() => {
-				UpdateLed(id, {
-					color: {r: 0, g: 0, b: 0},
-					mode: 0
-				});
-				timeout = null;
-			}, delay));
+	/* Send the updated state to the LED */
+	led.send(new Buffer([
+		led.state.color.r,
+		led.state.color.g,
+		led.state.color.b,
+		led.state.mode
+	]), () => {});
 
-			break;
-		}
-	}
+	timeout !== null && clearTimeout(timeout);
+	delay && (timeout = setTimeout(() => {
+		timeout = null;
+		UpdateLed(id, {
+			color: {r: 0, g: 0, b: 0},
+			mode: 0
+		});
+	}, delay));
 };
 
 module.exports = (app) => {
@@ -56,15 +53,15 @@ module.exports = (app) => {
 			led.id = req.sanitizeParams('id').toInt();
 
 			/* Check for an on-going session */
-			for(let i=0; i<LEDS.length; i++) {
-				if(LEDS[i].id === led.id) {
-					/* LED already connected. Steal it's state and force disconnect. */
-					led.state = LEDS[i].state;
-					LEDS[i].removeListener('close', LEDS[i].listeners('close')[LEDS[i].listenerCount('close') - 1]);
-					LEDS[i].close();
-					LEDS.splice(i, 1);
-					return push(false);
-				}
+			const session = LEDS.findIndex((ongoing) => (ongoing.id === led.id));
+			if(session !== -1) {
+				/* LED already connected. Steal it's state and force disconnect. */
+				const ongoing = LEDS[session];
+				LEDS.splice(session, 1);
+				led.state = ongoing.state;
+				ongoing.removeListener('close', ongoing.listeners('close')[ongoing.listenerCount('close') - 1]);
+				ongoing.close();
+				return push(false);
 			}
 
 			/* Fetch LED state from DB */
@@ -105,12 +102,8 @@ module.exports = (app) => {
 			/* Handle disconnects */
 			led.on('close', () => {
 				/* Pop the LED */
-				for(let i=0; i<LEDS.length; i++) {
-					if(LEDS[i].id === led.id) {
-						LEDS.splice(i, 1);
-						break;
-					}
-				}
+				const index = LEDS.findIndex((l) => (l.id === led.id));
+				index !== -1 && LEDS.splice(index, 1);
 
 				/* Notify all clients */
 				CLIENTS.forEach((client) => {
@@ -157,12 +150,8 @@ module.exports = (app) => {
 
 		/* Handle disconnects */
 		client.on('close', () => {
-			for(let i=0; i<CLIENTS.length; i++) {
-				if(CLIENTS[i].id === client.id) {
-					CLIENTS.splice(i, 1);
-					break;
-				}
-			}
+			const index = CLIENTS.findIndex((c) => (c.id === client.id));
+			index !== -1 && CLIENTS.splice(index, 1);
 		});
 
 		/* Request handler */
@@ -213,19 +202,21 @@ module.exports = (app) => {
 		req.getValidationResult().then((result) => {
 			if(!result.isEmpty()) return res.sendStatus(400).end();
 			const siteID = req.sanitizeBody('id').toInt();
-			/* Check online LEDs hooks */
-			for(let i=0; i<LEDS.length; i++) {
-				const led = LEDS[i];
-				led.state.piwik.forEach((hook) => {
-					if(hook.site === siteID) {
-						/* Pulse the LED for 10 seconds */
-						UpdateLed(led.id, {
-							color: hook.color,
-							mode: 1
-						}, null, 10000);
-					}
-				});
-			}
+			/* Check all the online LEDs */
+			LEDS.forEach((led) => {
+				const index = led.state.piwik.findIndex((hook) => (hook.site === siteID));
+				if(index === -1) return;
+				/* Pulse the LED for 10 seconds */
+				const color = led.state.piwik[index].color;
+				UpdateLed(led.id, {
+					color: {
+						r: color.r,
+						g: color.g,
+						b: color.b
+					},
+					mode: 1
+				}, null, 10000);
+			});
 			res.end();
 		});
 	});
