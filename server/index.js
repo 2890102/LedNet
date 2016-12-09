@@ -46,7 +46,7 @@ if(Config.production) {
 		res.send(Sessions.inject(indexCache, req.user))
 	);
 	app.get('/', index);
-	app.use(express.static(path.join(__dirname, '../dist')));
+	app.use(express.static(path.join(__dirname, '../dist'), {maxAge: 31536000}));
 	app.get('*', index);
 } else {
 	const webpack = require('webpack');
