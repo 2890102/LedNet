@@ -33,7 +33,8 @@
 * Pull GPI0 to ground and reset each ESP-01 into UART download mode.
 * Flash each ESP-01: `cd firmware && platformio run`
 * If you want to automate the network configuration: `echo -e "SSID\nPASSWORD" > firmware/data/config`
-* Finally, reset each ESP-01 once again and upload the SPIFFS: `cd firmware && platformio run --target=uploadfs`
+* Finally, reset each ESP-01 once again (keeping GPI0 to ground) and upload the SPIFFS: `cd firmware && platformio run --target=uploadfs`
+* Once you deploy the hardware, if you want to reset the network configuration: Keep the push button pressed while the ESP-01 boots up and it will start the WiFi setup AP.
 
 ## Piwik plugin:
 
