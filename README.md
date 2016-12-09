@@ -32,12 +32,12 @@
 * Edit server/hardware config in: [firmware/src/config.hpp](firmware/src/config.hpp)
 * Pull GPI0 to ground and reset each ESP-01 into UART download mode.
 * Flash each ESP-01: `cd firmware && platformio run`
-* If you want to automate the network configuration: `echo -e "SSID\nPASSWORD" > firmware/data/config`.
+* If you want to automate the network configuration: `echo -e "SSID\nPASSWORD" > firmware/data/config`
 * Finally, reset each ESP-01 once again and upload the SPIFFS: `cd firmware && platformio run --target=uploadfs`
 
 ## Piwik plugin:
 
-* Download & install [Piwik](https://piwik.org/download/)
+* Download & install: [Piwik](https://piwik.org/download/)
 * Copy the plugin into your installation: `cp -R piwik $PIWIK_PATH/plugins/LedNet`
 * Configure the 'LedNet server URL' setting at: `https://PIWIK_HOST/index.php?module=CoreAdminHome&action=adminPluginSettings`
 
