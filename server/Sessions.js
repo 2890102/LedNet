@@ -42,7 +42,7 @@ module.exports = (app) => {
 	});
 
 	/* Session */
-	const sessionStore = (Config.redisURI ? connectRedis : connectMongo)(session);
+	const sessionStore = (Config.redisURL ? connectRedis : connectMongo)(session);
 	app.set('trust proxy', 'loopback');
 	app.use(session({
 		resave: false,
@@ -54,7 +54,7 @@ module.exports = (app) => {
 			httpOnly: true,
 			secure: Config.production
 		},
-		store: new sessionStore(Config.redisURI ? {url: Config.redisURI} : {mongooseConnection: mongoose.connection})
+		store: new sessionStore(Config.redisURL ? {url: Config.redisURL} : {mongooseConnection: mongoose.connection})
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());

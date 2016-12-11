@@ -5,8 +5,8 @@ module.exports = {
 		email: 'admin@led.net',
 		password: 'adm!n'
 	},
-	mongoURI: process.env.MONGOHQ_URL || process.env.MONGODB_URI || 'mongodb://localhost/LedNet',
-	redisURI: process.env.REDIS_URL,
+	mongoURI: process.env.MONGODB_URI || 'mongodb://localhost/LedNet',
+	redisURL: process.env.REDIS_URL,
 	hostname: process.env.HOSTNAME,
 	port: process.env.PORT || 8080,
 	basename: process.env.BASENAME || '/',
