@@ -5,8 +5,10 @@
   "main": "server/",
   "scripts": {
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --progress --profile --colors",
-    "postinstall": "if-env NODE_ENV=production && npm run build",
-    "start": "node server"
+		"docker": "docker-compose up -d",
+		"docker:down": "docker-compose down",
+		"start": "node server",
+		"postinstall": "if-env NODE_ENV=production && npm run build"
   },
   "dependencies": {
     "autoprefixer": "^6.5.3",

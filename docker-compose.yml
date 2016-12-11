@@ -1,16 +1,20 @@
-web:
-  build: .
-  links:
-    - mongo
-  ports:
-    - "8080:8080"
-  volumes:
-    - "./app:/usr/src/LedNet/app:ro"
-    - "./server:/usr/src/LedNet/server:ro"
-    - "./webpack.config.js:/usr/src/LedNet/webpack.config.js:ro"
-  environment:
-    MONGODB_URI: "mongodb://mongo:27017/LedNet"
-mongo:
-  image: mongo:latest
-  volumes:
-    - "./data:/data/db:rw"
+version: '2'
+services:
+  web:
+    build: .
+    links:
+     - mongo
+    ports:
+     - "8080:8080"
+    volumes:
+     - ./app:/usr/src/LedNet/app:ro
+     - ./server:/usr/src/LedNet/server:ro
+     - ./webpack.config.js:/usr/src/LedNet/webpack.config.js:ro
+    environment:
+      MONGODB_URI: "mongodb://mongo/LedNet"
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+     - ./data:/data/db:rw
