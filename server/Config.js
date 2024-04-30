@@ -2,7 +2,7 @@
 
 module.exports = {
 	defaultUser: {
-		email: 'admin@led.net',
+		email: 'azaberalberto@gmail.com',
 		password: 'adm!n'
 	},
 	mongoURI: process.env.MONGODB_URI || 'mongodb://localhost/LedNet',
